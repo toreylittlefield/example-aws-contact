@@ -18,12 +18,15 @@ const ContactForm = () => {
       firstName: '',
       lastName: '',
       email: '',
+      recaptcha: '',
     },
     onSubmit: async (values) => {
-      const token = await reCaptchaRef.current.executeAsync();
-      console.log(token);
+      //   const token = await reCaptchaRef.current.getValue();
+      //   console.log(token);
+      //   values.recaptcha = token;
       reCaptchaRef.current.reset();
       alert(JSON.stringify(values, null, 2));
+      formik.resetForm({});
     },
   });
   return (
@@ -61,6 +64,16 @@ const ContactForm = () => {
         theme="dark"
         ref={reCaptchaRef}
         sitekey={TEST_SITE_KEY}
+        name="recaptcha"
+        id="recaptcha"
+        value={formik.values.recaptcha}
+        onChange={async () => {
+          const token = await reCaptchaRef.current.getValue();
+          // const token = await reCaptchaRef.current.getValue();
+          console.log(token);
+          formik.handleChange((formik.values.recaptcha = token));
+          //   reCaptchaRef.current.reset();
+        }}
       />
       <button type="submit">Submit</button>
     </form>

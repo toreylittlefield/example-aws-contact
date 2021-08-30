@@ -50,10 +50,11 @@ const ContactFormWithFieldProps = () => {
         theme="dark"
         ref={reCaptchaRef}
         sitekey={TEST_SITE_KEY}
-        name="recaptcha"
         id="recaptcha"
-        value={formik.values.recaptcha}
-        onBlur={formik.handleBlur}
+        // name="recaptcha"
+        {...formik.getFieldProps('recaptcha')}
+        // value={formik.values.recaptcha}
+        // onBlur={formik.handleBlur}
         onChange={async () => {
           const token = await reCaptchaRef.current.getValue();
           console.log(token);

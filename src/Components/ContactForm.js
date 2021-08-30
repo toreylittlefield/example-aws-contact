@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { useFormik } from 'formik';
 import ReCAPTCHA from 'react-google-recaptcha';
+import * as Yup from 'yup';
 
 const TEST_SITE_KEY = `6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI`;
 const TEST_SECRET_KEY = `6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe`;
@@ -9,32 +10,39 @@ const ContactForm = () => {
   const [state, setState] = useState();
   const reCaptchaRef = useRef(null);
 
-  const validate = (values) => {
-    const errors = {};
-    if (!values.firstName) {
-      errors.firstName = 'Required';
-    } else if (values.firstName.length > 15 || values.firstName.length < 2) {
-      errors.firstName = 'Must be between 2 and 15 characters';
-    }
+  //   const validate = (values) => {
+  //     const errors = {};
+  //     if (!values.firstName) {
+  //       errors.firstName = 'Required';
+  //     } else if (values.firstName.length > 15 || values.firstName.length < 2) {
+  //       errors.firstName = 'Must be between 2 and 15 characters';
+  //     }
 
-    if (!values.lastName) {
-      errors.lastName = 'Required';
-    } else if (values.lastName.length > 20) {
-      errors.lastName = 'Must be 20 characters or less';
-    }
+  //     if (!values.lastName) {
+  //       errors.lastName = 'Required';
+  //     } else if (values.lastName.length > 20) {
+  //       errors.lastName = 'Must be 20 characters or less';
+  //     }
 
-    if (!values.email) {
-      errors.email = 'Required';
-    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
-      errors.email = 'Invalid email address';
-    }
+  //     if (!values.email) {
+  //       errors.email = 'Required';
+  //     } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
+  //       errors.email = 'Invalid email address';
+  //     }
 
-    if (!values.recaptcha) {
-      errors.recaptcha = 'Prove You Are Not A Robot';
-    }
+  //     if (!values.recaptcha) {
+  //       errors.recaptcha = 'Prove You Are Not A Robot';
+  //     }
 
-    return errors;
-  };
+  //     return errors;
+  //   };
+
+  const validationSchema = Yup.object({
+    firstName: Yup.string().max(15, 'Must be 15 characters or less').required('Required'),
+    lastName: Yup.string().max(20, 'Must be 20 characters or less').required('Required'),
+    email: Yup.string().email('Invalid email address').required('Required'),
+    recaptcha: Yup.string().min(1, 'Prove You Are Not A Robot').required('Prove You Are Not A Robot'),
+  });
 
   // Note that we have to initialize ALL of fields with values. These
   // could come from props, but since we don’t want to prefill this form,
@@ -47,7 +55,7 @@ const ContactForm = () => {
       email: '',
       recaptcha: '',
     },
-    validate,
+    validationSchema,
     onSubmit: async (values) => {
       //   const token = await reCaptchaRef.current.getValue();
       //   console.log(token);

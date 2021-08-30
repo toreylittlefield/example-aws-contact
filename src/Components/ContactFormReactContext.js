@@ -1,9 +1,44 @@
 import React, { useRef } from 'react';
-import { Formik } from 'formik';
+import { Formik, Field, Form, ErrorMessage } from 'formik';
 import ReCAPTCHA from 'react-google-recaptcha';
 import * as Yup from 'yup';
 
 const TEST_SITE_KEY = `6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI`;
+
+const RecaptchaComponent = ({
+  field, // { name, value, onChange, onBlur }
+  form: { values, touched, errors, setFieldValue, getFieldProps }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
+  reCaptchaRef,
+  ...props
+}) => {
+  return (
+    <>
+      <ReCAPTCHA
+        {...field}
+        {...props}
+        style={{ display: 'inline-block' }}
+        size="compact"
+        theme="dark"
+        ref={reCaptchaRef}
+        sitekey={TEST_SITE_KEY}
+        id="recaptcha"
+        {...getFieldProps('recaptcha')}
+        onChange={async () => {
+          const token = await reCaptchaRef.current.getValue();
+          console.log(token);
+          setFieldValue('recaptcha', token);
+        }}
+      />
+      {touched.recaptcha && errors.recaptcha ? (
+        <div>{errors.recaptcha}</div>
+      ) : values.recaptcha ? (
+        <textarea rows={5} cols={5}>
+          {values.recaptcha}
+        </textarea>
+      ) : null}
+    </>
+  );
+};
 
 const ContactFormReactContext = () => {
   const reCaptchaRef = useRef(null);
@@ -23,44 +58,25 @@ const ContactFormReactContext = () => {
           reCaptchaRef.current.reset();
           resetForm({});
           setSubmitting(false);
-        }, 400);
+        }, 100);
       }}
     >
-      {(formik) => (
-        <form className="contact-form" onSubmit={formik.handleSubmit}>
-          <label htmlFor="firstName">First Name</label>
-          <input id="firstName" type="text" {...formik.getFieldProps('firstName')} />
-          {formik.touched.firstName && formik.errors.firstName ? <div>{formik.errors.firstName}</div> : null}
-          <label htmlFor="lastName">Last Name</label>
-          <input id="lastName" type="text" {...formik.getFieldProps('lastName')} />
-          {formik.touched.lastName && formik.errors.lastName ? <div>{formik.errors.lastName}</div> : null}
-          <label htmlFor="email">Email Address</label>
-          <input id="email" type="email" {...formik.getFieldProps('email')} />
-          {formik.touched.email && formik.errors.email ? <div>{formik.errors.email}</div> : null}
-          <ReCAPTCHA
-            style={{ display: 'inline-block' }}
-            size="compact"
-            theme="dark"
-            ref={reCaptchaRef}
-            sitekey={TEST_SITE_KEY}
-            id="recaptcha"
-            {...formik.getFieldProps('recaptcha')}
-            onChange={async () => {
-              const token = await reCaptchaRef.current.getValue();
-              console.log(token);
-              formik.setFieldValue('recaptcha', token);
-            }}
-          />
-          {formik.touched.recaptcha && formik.errors.recaptcha ? (
-            <div>{formik.errors.recaptcha}</div>
-          ) : formik.values.recaptcha ? (
-            <textarea rows={5} cols={5}>
-              {formik.values.recaptcha}
-            </textarea>
-          ) : null}
-          <button type="submit">Submit</button>
-        </form>
-      )}
+      <Form className="contact-form">
+        <label htmlFor="firstName">First Name</label>
+        <Field name="firstName" type="text" />
+        <ErrorMessage name="firstName" />
+
+        <label htmlFor="lastName">Last Name</label>
+        <Field name="lastName" type="text" />
+        <ErrorMessage name="lastName" />
+
+        <label htmlFor="email">Email Address</label>
+        <Field name="email" type="email" />
+        <ErrorMessage name="email" />
+        <Field name="recaptcha" component={RecaptchaComponent} reCaptchaRef={reCaptchaRef} />
+
+        <button type="submit">Submit</button>
+      </Form>
     </Formik>
   );
 };

@@ -1,13 +1,11 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { useFormik } from 'formik';
 import ReCAPTCHA from 'react-google-recaptcha';
 import * as Yup from 'yup';
 
 const TEST_SITE_KEY = `6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI`;
-const TEST_SECRET_KEY = `6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe`;
 
 const ContactForm = () => {
-  const [state, setState] = useState();
   const reCaptchaRef = useRef(null);
 
   //   const validate = (values) => {
@@ -57,9 +55,6 @@ const ContactForm = () => {
     },
     validationSchema,
     onSubmit: async (values) => {
-      //   const token = await reCaptchaRef.current.getValue();
-      //   console.log(token);
-      //   values.recaptcha = token;
       reCaptchaRef.current.reset();
       alert(JSON.stringify(values, null, 2));
       formik.resetForm({});
@@ -109,11 +104,8 @@ const ContactForm = () => {
         onBlur={formik.handleBlur}
         onChange={async () => {
           const token = await reCaptchaRef.current.getValue();
-          // const token = await reCaptchaRef.current.getValue();
           console.log(token);
-          //   formik.handleChange(
           formik.setFieldValue('recaptcha', token);
-          //   reCaptchaRef.current.reset();
         }}
       />
       {formik.touched.recaptcha && formik.errors.recaptcha ? (

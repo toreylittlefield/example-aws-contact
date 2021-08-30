@@ -6,7 +6,7 @@ import * as Yup from 'yup';
 const TEST_SITE_KEY = `6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI`;
 
 const RecaptchaComponent = ({ children, reCaptchaRef, ...props }) => {
-  const [field, meta] = useField({ ...props, type: 'checkbox' });
+  const [field, meta, helpers] = useField({ ...props, type: 'checkbox' });
   return (
     <>
       <ReCAPTCHA
@@ -18,12 +18,10 @@ const RecaptchaComponent = ({ children, reCaptchaRef, ...props }) => {
         ref={reCaptchaRef}
         sitekey={TEST_SITE_KEY}
         id="recaptcha"
-        // {...meta.getFieldProps('recaptcha')}
         onChange={async () => {
           const token = await reCaptchaRef.current.getValue();
           console.log(token);
-          field.value = token;
-          field.checked = true;
+          helpers.setValue(token);
         }}
       />
       {meta.touched && meta.error ? (

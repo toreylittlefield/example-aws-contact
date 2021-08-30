@@ -1,6 +1,14 @@
+section {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-gap: 10px;
+  margin: 2em;
+  padding: 2em;
+  place-content: center;
+  border-bottom: 2px dashed brown;
+}
+
 .contact-form {
-  display: fixed;
-  height: 100vmin;
   display: grid;
   place-content: center;
 }

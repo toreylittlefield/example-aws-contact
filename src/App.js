@@ -2,6 +2,7 @@ import './App.css';
 import ContactForm from './Components/ContactForm';
 import ContactFormReactContext from './Components/ContactFormReactContext';
 import ContactFormWithFieldProps from './Components/ContactFormWithFieldProps';
+import ContactFormWithUseFieldHook from './Components/ContactFormWithUseFieldHook';
 
 const App = () => (
   <div className="App">
@@ -19,6 +20,11 @@ const App = () => (
       <h2>Formik React Context</h2>
       <p>Uses React Context / FormikContext</p>
       <ContactFormReactContext />
+    </section>
+    <section>
+      <h2>Formik useField Hook Example</h2>
+      <p>Uses form useField hook for abstraction</p>
+      <ContactFormWithUseFieldHook />
     </section>
   </div>
 );

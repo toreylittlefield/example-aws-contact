@@ -13,8 +13,8 @@ const ContactForm = () => {
     const errors = {};
     if (!values.firstName) {
       errors.firstName = 'Required';
-    } else if (values.firstName.length > 15) {
-      errors.firstName = 'Must be 15 characters or less';
+    } else if (values.firstName.length > 15 || values.firstName.length < 2) {
+      errors.firstName = 'Must be between 2 and 15 characters';
     }
 
     if (!values.lastName) {
@@ -65,27 +65,30 @@ const ContactForm = () => {
         name="firstName"
         type="text"
         onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
         value={formik.values.firstName}
       />
-      {formik.errors.firstName ? <div>{formik.errors.firstName}</div> : null}
+      {formik.touched.firstName && formik.errors.firstName ? <div>{formik.errors.firstName}</div> : null}
       <label htmlFor="lastName">Last Name</label>
       <input
         id="lastName"
         name="lastName"
         type="text"
         onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
         value={formik.values.lastName}
       />
-      {formik.errors.lastName ? <div>{formik.errors.lastName}</div> : null}
+      {formik.touched.lastName && formik.errors.lastName ? <div>{formik.errors.lastName}</div> : null}
       <label htmlFor="email">Email Address</label>
       <input
         id="email"
         name="email"
         type="email"
         onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
         value={formik.values.email}
       />
-      {formik.errors.email ? <div>{formik.errors.email}</div> : null}
+      {formik.touched.email && formik.errors.email ? <div>{formik.errors.email}</div> : null}
       <ReCAPTCHA
         style={{ display: 'inline-block' }}
         size="compact"
@@ -95,6 +98,7 @@ const ContactForm = () => {
         name="recaptcha"
         id="recaptcha"
         value={formik.values.recaptcha}
+        onBlur={formik.handleBlur}
         onChange={async () => {
           const token = await reCaptchaRef.current.getValue();
           // const token = await reCaptchaRef.current.getValue();
@@ -104,7 +108,7 @@ const ContactForm = () => {
           //   reCaptchaRef.current.reset();
         }}
       />
-      {formik.errors.recaptcha ? (
+      {formik.touched.recaptcha && formik.errors.recaptcha ? (
         <div>{formik.errors.recaptcha}</div>
       ) : formik.values.recaptcha ? (
         <textarea rows={5} cols={5}>

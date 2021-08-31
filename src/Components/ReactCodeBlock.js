@@ -29,7 +29,7 @@ const ReactCodeBlock = ({ code }) => {
     window.navigator.clipboard.writeText(code);
   };
   return (
-    <div style={{ position: 'relative' }}>
+    <div style={{ position: 'relative', display: 'grid', placeContent: 'flex-start' }}>
       <Tooltip title="Copy Snippet" style={{ position: 'absolute', right: 0, top: 0, color: 'white' }}>
         <IconButton onClick={handleCopy}>
           <FileCopy />
@@ -42,6 +42,7 @@ const ReactCodeBlock = ({ code }) => {
         wrapLines={true}
         customStyle={{
           margin: 0,
+          padding: '0.25em',
           wordBreak: 'break-all',
           whiteSpace: 'pre-wrap',
           boxShadow: '0px 2px 4px rgba(50,50,93,.1)',

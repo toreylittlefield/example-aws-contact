@@ -30,7 +30,7 @@ const ReactCodeBlock = ({ code }) => {
   };
   return (
     <div style={{ position: 'relative' }}>
-      <Tooltip title="Copy Snippet" PopperComponent={} style={{ position: 'absolute', right: 0, top: 0, color: 'white' }}>
+      <Tooltip title="Copy Snippet" style={{ position: 'absolute', right: 0, top: 0, color: 'white' }}>
         <IconButton onClick={handleCopy}>
           <FileCopy />
         </IconButton>

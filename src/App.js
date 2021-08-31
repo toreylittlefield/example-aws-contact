@@ -1,21 +1,19 @@
 import './App.css';
-import ContactForm from './Components/ContactForm';
+import ContactForm, { contactFormCodeString } from './Components/ContactForm';
 import ContactFormReactContext from './Components/ContactFormReactContext';
 import ContactFormWithFieldProps from './Components/ContactFormWithFieldProps';
 import ContactFormWithUseFieldHook from './Components/ContactFormWithUseFieldHook';
-import ReactDOMServer from 'react-dom/server';
-import { useState } from 'react';
 import ReactCodeBlock from './Components/ReactCodeBlock';
+import React from 'react';
 
 const App = () => {
-  const [contactformCode] = useState(ReactDOMServer.renderToStaticMarkup(<ContactForm />));
   return (
     <div className="App">
       <section>
         <h2>Formik Example With Yup</h2>
         <p>All the boilerplate stuff</p>
         <ContactForm />
-        <ReactCodeBlock code={contactformCode} />
+        <ReactCodeBlock code={contactFormCodeString} />
       </section>
       <section>
         <h2>Formik With Field Props</h2>

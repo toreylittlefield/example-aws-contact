@@ -37,11 +37,16 @@ const ReactCodeBlock = ({ code }) => {
       </Tooltip>
       <SyntaxHighlighter
         language="jsx"
-        showLineNumbers
-        lineProps={{ style: { wordBreak: 'break-all', whiteSpace: 'pre-wrap' } }}
+        showLineNumbers={true}
+        showInlineLineNumbers={true} // <-- add this prop!
         wrapLines={true}
+        customStyle={{
+          margin: 0,
+          wordBreak: 'break-all',
+          whiteSpace: 'pre-wrap',
+          boxShadow: '0px 2px 4px rgba(50,50,93,.1)',
+        }}
         style={darcula}
-        customStyle={{ margin: 0, padding: 0 }}
         children={beautify(code, options)}
       />
     </div>

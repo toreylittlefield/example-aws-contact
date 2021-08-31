@@ -36,7 +36,7 @@ const ReactCodeBlock = ({ code }) => {
     <Card>
       <CardContent>
         <CardActions disableSpacing style={{ padding: '0', position: 'relative' }}>
-          <div style={{ display: 'flex', position: 'absolute', right: 0, top: 0, padding: '1em 2em' }}>
+          <div style={{ display: 'flex', position: 'absolute', right: 0, top: 0, padding: '0.1em 2em' }}>
             <Tooltip title="Copy Snippet" style={{ color: 'white' }}>
               <IconButton onClick={handleCopy}>
                 <FileCopy />

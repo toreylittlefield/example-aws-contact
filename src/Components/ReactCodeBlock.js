@@ -72,8 +72,9 @@ const ReactCodeBlock = ({ code }) => {
             showLineNumbers={true}
             showInlineLineNumbers={true} // <-- add this prop!
             wrapLines={true}
+            lineNumberStyle={{ minWidth: '1.2em' }}
             customStyle={{
-              marginTop: -116,
+              marginTop: -112,
               margin: 0,
               padding: '0.25em',
               wordBreak: 'break-all',

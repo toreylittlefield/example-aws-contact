@@ -36,7 +36,7 @@ const ReactCodeBlock = ({ code }) => {
   return (
     <Card style={{ overflow: 'visible' }}>
       <CardContent>
-        <Collapse collapsedSize="200px" in={open} timeout="auto" style={open ? {} : { overflowY: 'scroll' }}>
+        <Collapse collapsedSize="400px" in={open} timeout="auto" style={open ? {} : { overflowY: 'scroll' }}>
           <CardActions
             style={{
               position: 'sticky',

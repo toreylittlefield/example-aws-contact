@@ -10,24 +10,32 @@ const App = () => {
   return (
     <div className="App">
       <section>
-        <h2>Formik Example With Yup</h2>
-        <p>All the boilerplate stuff</p>
-        <ContactForm />
+        <div className="container">
+          <h2>Formik Example With Yup</h2>
+          <p>All the boilerplate stuff</p>
+          <ContactForm />
+        </div>
         <ReactCodeBlock code={contactFormCodeString} />
       </section>
       <section>
-        <h2>Formik With Field Props</h2>
-        <p>Reduces boilerplate</p>
+        <div className="container">
+          <h2>Formik With Field Props</h2>
+          <p>Reduces boilerplate</p>
+        </div>
         <ContactFormWithFieldProps />
       </section>
       <section>
-        <h2>Formik React Context</h2>
-        <p>Uses React Context / FormikContext</p>
+        <div className="container">
+          <h2>Formik React Context</h2>
+          <p>Uses React Context / FormikContext</p>
+        </div>
         <ContactFormReactContext />
       </section>
       <section>
-        <h2>Formik useField Hook Example</h2>
-        <p>Uses form useField hook for abstraction</p>
+        <div className="container">
+          <h2>Formik useField Hook Example</h2>
+          <p>Uses form useField hook for abstraction</p>
+        </div>
         <ContactFormWithUseFieldHook />
       </section>
     </div>

@@ -8,6 +8,7 @@ import {
   contactFormWithFieldPropsCodeString,
   ContactFormWithUseFieldHook,
   ContactFormWithUseFieldHookCodeString,
+  ContactFormWithUseFieldHookMui,
   Section,
 } from './Components';
 
@@ -37,6 +38,12 @@ const App = () => {
         sectionDescription="Uses formik custom useField hook for abstraction and allows us to create custom field components"
         ComponentToRender={ContactFormWithUseFieldHook}
         codeString={ContactFormWithUseFieldHookCodeString}
+      />
+      <Section
+        sectionTitle="Formik useField Hook Example Extended With MUI Components"
+        sectionDescription="Again extending the useField example and adding MUI components using the 'AS' prop from the formik Field Component"
+        ComponentToRender={ContactFormWithUseFieldHookMui}
+        // codeString={ContactFormWithUseFieldHookCodeString}
       />
     </div>
   );

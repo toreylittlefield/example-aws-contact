@@ -10,8 +10,9 @@ import {
   ContactFormWithUseFieldHookCodeString,
   ContactFormWithUseFieldHookMui,
   contactFormWithUseFieldHookMuiCodeString,
-  Section,
 } from './Components';
+
+import { Section } from './Components/Section';
 
 const App = () => (
   <div className="App">

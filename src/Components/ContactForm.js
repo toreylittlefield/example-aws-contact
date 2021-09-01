@@ -120,7 +120,7 @@ const ContactForm = () => {
   );
 };
 
-export default ContactForm;
+export { ContactForm };
 
 export const contactFormCodeString = [
   `

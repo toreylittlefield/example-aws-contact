@@ -81,7 +81,7 @@ const ContactFormReactContext = () => {
   );
 };
 
-export default ContactFormReactContext;
+export { ContactFormReactContext };
 
 export const contactFormReactContextCodeString = [
   `

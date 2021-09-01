@@ -2,9 +2,20 @@ import React, { useState } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { darcula } from 'react-syntax-highlighter/dist/esm/styles/prism/';
 import * as beautify from 'js-beautify';
-import { IconButton, Tooltip, Collapse, Card, CardActions, CardContent } from '@material-ui/core';
+import {
+  IconButton,
+  Tooltip,
+  Collapse,
+  Card,
+  CardActions,
+  CardContent,
+} from '@material-ui/core';
 import { green, yellow } from '@material-ui/core/colors';
-import { FileCopy, ExpandMoreTwoTone, ExpandLessTwoTone } from '@material-ui/icons';
+import {
+  FileCopy,
+  ExpandMoreTwoTone,
+  ExpandLessTwoTone,
+} from '@material-ui/icons';
 import { useTheme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
@@ -87,7 +98,7 @@ export const ReactCodeBlock = ({ code }) => {
             >
               <IconButton onClick={handleOpen}>
                 {open ? (
-                  <ExpandLessTwoTone color={'secondary'} />
+                  <ExpandLessTwoTone color="secondary" />
                 ) : (
                   <ExpandMoreTwoTone style={{ color: green[500] }} />
                 )}
@@ -96,9 +107,9 @@ export const ReactCodeBlock = ({ code }) => {
           </CardActions>
           <SyntaxHighlighter
             language="jsx"
-            showLineNumbers={true}
-            showInlineLineNumbers={true}
-            wrapLines={true}
+            showLineNumbers
+            showInlineLineNumbers
+            wrapLines
             lineNumberStyle={{ minWidth: '1.2em', maxWidth: '69ch' }}
             customStyle={{
               marginTop: -112,
@@ -108,8 +119,9 @@ export const ReactCodeBlock = ({ code }) => {
               whiteSpace: 'pre-wrap',
             }}
             style={darcula}
-            children={beautify(code, options)}
-          />
+          >
+            {beautify(code, options)}
+          </SyntaxHighlighter>
         </Collapse>
       </CardContent>
     </Card>

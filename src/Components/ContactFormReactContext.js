@@ -10,35 +10,33 @@ const RecaptchaComponent = ({
   form: { values, touched, errors, setFieldValue, getFieldProps }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
   reCaptchaRef,
   ...props
-}) => {
-  return (
-    <>
-      <ReCAPTCHA
-        {...field}
-        {...props}
-        style={{ display: 'inline-block' }}
-        size="compact"
-        theme="dark"
-        ref={reCaptchaRef}
-        sitekey={TEST_SITE_KEY}
-        id="recaptcha"
-        {...getFieldProps('recaptcha')}
-        onChange={async () => {
-          const token = await reCaptchaRef.current.getValue();
-          console.log(token);
-          setFieldValue('recaptcha', token);
-        }}
-      />
-      {touched.recaptcha && errors.recaptcha ? (
-        <div>{errors.recaptcha}</div>
-      ) : values.recaptcha ? (
-        <textarea rows={5} cols={5}>
-          {values.recaptcha}
-        </textarea>
-      ) : null}
-    </>
-  );
-};
+}) => (
+  <>
+    <ReCAPTCHA
+      {...field}
+      {...props}
+      style={{ display: 'inline-block' }}
+      size="compact"
+      theme="dark"
+      ref={reCaptchaRef}
+      sitekey={TEST_SITE_KEY}
+      id="recaptcha"
+      {...getFieldProps('recaptcha')}
+      onChange={async () => {
+        const token = await reCaptchaRef.current.getValue();
+        console.log(token);
+        setFieldValue('recaptcha', token);
+      }}
+    />
+    {touched.recaptcha && errors.recaptcha ? (
+      <div>{errors.recaptcha}</div>
+    ) : values.recaptcha ? (
+      <textarea rows={5} cols={5}>
+        {values.recaptcha}
+      </textarea>
+    ) : null}
+  </>
+);
 
 const ContactFormReactContext = () => {
   const reCaptchaRef = useRef(null);
@@ -47,10 +45,16 @@ const ContactFormReactContext = () => {
     <Formik
       initialValues={{ firstName: '', lastName: '', email: '', recaptcha: '' }}
       validationSchema={Yup.object({
-        firstName: Yup.string().max(15, 'Must be 15 characters or less').required('Required'),
-        lastName: Yup.string().max(20, 'Must be 20 characters or less').required('Required'),
+        firstName: Yup.string()
+          .max(15, 'Must be 15 characters or less')
+          .required('Required'),
+        lastName: Yup.string()
+          .max(20, 'Must be 20 characters or less')
+          .required('Required'),
         email: Yup.string().email('Invalid email address').required('Required'),
-        recaptcha: Yup.string().min(1, 'Prove You Are Not A Robot').required('Prove You Are Not A Robot'),
+        recaptcha: Yup.string()
+          .min(1, 'Prove You Are Not A Robot')
+          .required('Prove You Are Not A Robot'),
       })}
       onSubmit={async (values, { resetForm, setSubmitting }) => {
         setTimeout(() => {
@@ -73,7 +77,11 @@ const ContactFormReactContext = () => {
         <label htmlFor="email">Email Address</label>
         <Field name="email" type="email" />
         <ErrorMessage name="email" />
-        <Field name="recaptcha" component={RecaptchaComponent} reCaptchaRef={reCaptchaRef} />
+        <Field
+          name="recaptcha"
+          component={RecaptchaComponent}
+          reCaptchaRef={reCaptchaRef}
+        />
 
         <button type="submit">Submit</button>
       </Form>

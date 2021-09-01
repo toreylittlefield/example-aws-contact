@@ -59,18 +59,23 @@ export const ContactFormWithUseFieldHookMui = () => {
           .min(1, 'Prove You Are Not A Robot')
           .required('Prove You Are Not A Robot'),
       })}
-      onSubmit={async (values, { resetForm, setSubmitting }) => {
-        setSubmitting(true);
+      /**
+       * if onSubmit is async setSubmitting does not need to be called, it is invoked automatically once resolved
+       * @see https://formik.org/docs/api/withFormik#the-formikbag
+       */
+      onSubmit={(values, { resetForm, setSubmitting }) => {
         setTimeout(() => {
           alert(JSON.stringify(values, null, 2));
-          reCaptchaRef.current.reset();
-          resetForm({});
           setSubmitting(false);
+          reCaptchaRef.current.reset();
+          resetForm({
+            values: { firstName: '', lastName: '', email: '', recaptcha: '' },
+          });
         }, 3000);
       }}
     >
       {/* formik uses render props */}
-      {({ errors, touched, isSubmitting, submitCount }) => (
+      {({ errors, touched, isSubmitting, submitCount, dirty }) => (
         <Form className="contact-form">
           <Field
             name="firstName"
@@ -108,7 +113,7 @@ export const ContactFormWithUseFieldHookMui = () => {
           <RecaptchaComponent name="recaptcha" reCaptchaRef={reCaptchaRef} />
 
           <Button
-            disabled={isSubmitting}
+            disabled={isSubmitting || !dirty}
             color="primary"
             variant="contained"
             type="submit"

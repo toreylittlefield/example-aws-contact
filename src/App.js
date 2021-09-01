@@ -1,46 +1,43 @@
 import './App.css';
-import ContactForm, { contactFormCodeString } from './Components/ContactForm';
-import ContactFormReactContext, {
+import {
+  ContactForm,
+  contactFormCodeString,
+  ContactFormReactContext,
   contactFormReactContextCodeString,
-} from './Components/ContactFormReactContext';
-import ContactFormWithFieldProps from './Components/ContactFormWithFieldProps';
-import ContactFormWithUseFieldHook from './Components/ContactFormWithUseFieldHook';
-import ReactCodeBlock from './Components/ReactCodeBlock';
-import React from 'react';
+  ContactFormWithFieldProps,
+  contactFormWithFieldPropsCodeString,
+  ContactFormWithUseFieldHook,
+  ContactFormWithUseFieldHookCodeString,
+  Section,
+} from './Components';
 
 const App = () => {
   return (
     <div className="App">
-      <section>
-        <div className="container">
-          <h2>Formik Example With Yup</h2>
-          <p>All the boilerplate stuff</p>
-          <ContactForm />
-        </div>
-        <ReactCodeBlock code={contactFormCodeString} />
-      </section>
-      <section>
-        <div className="container">
-          <h2>Formik With Field Props</h2>
-          <p>Reduces boilerplate</p>
-        </div>
-        <ContactFormWithFieldProps />
-      </section>
-      <section>
-        <div className="container">
-          <h2>Formik React Context</h2>
-          <p>Uses React Context / FormikContext</p>
-          <ContactFormReactContext />
-        </div>
-        <ReactCodeBlock code={contactFormReactContextCodeString} />
-      </section>
-      <section>
-        <div className="container">
-          <h2>Formik useField Hook Example</h2>
-          <p>Uses form useField hook for abstraction</p>
-        </div>
-        <ContactFormWithUseFieldHook />
-      </section>
+      <Section
+        sectionTitle="Formik Example With Yup"
+        sectionDescription="All the formik boilerplate stuff example"
+        ComponentToRender={ContactForm}
+        codeString={contactFormCodeString}
+      />
+      <Section
+        sectionTitle="Formik With Field Props"
+        sectionDescription="Example reduces some of the boilerplate from the above example using field props"
+        ComponentToRender={ContactFormWithFieldProps}
+        codeString={contactFormWithFieldPropsCodeString}
+      />
+      <Section
+        sectionTitle="Formik React Context"
+        sectionDescription="Formik basically uses the React Context which even further abstracts"
+        ComponentToRender={ContactFormReactContext}
+        codeString={contactFormReactContextCodeString}
+      />
+      <Section
+        sectionTitle="Formik useField Hook Example"
+        sectionDescription="Uses formik custom useField hook for abstraction and allows us to create custom field components"
+        ComponentToRender={ContactFormWithUseFieldHook}
+        codeString={ContactFormWithUseFieldHookCodeString}
+      />
     </div>
   );
 };

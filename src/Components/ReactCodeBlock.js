@@ -5,6 +5,8 @@ import * as beautify from 'js-beautify';
 import { IconButton, Tooltip, Collapse, Card, CardActions, CardContent } from '@material-ui/core';
 import { green, yellow } from '@material-ui/core/colors';
 import { FileCopy, ExpandMoreTwoTone, ExpandLessTwoTone } from '@material-ui/icons';
+import { useTheme } from '@material-ui/core/styles';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 const options = {
   indent_size: '1',
@@ -28,15 +30,40 @@ const options = {
 
 const ReactCodeBlock = ({ code }) => {
   const [open, setOpen] = useState(false);
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.up('sm'));
 
   const handleCopy = () => {
     window.navigator.clipboard.writeText(code);
   };
   const handleOpen = () => setOpen((prev) => !prev);
   return (
-    <Card style={{ overflow: 'visible' }}>
+    <Card
+      style={
+        open && matches
+          ? {
+              overflow: 'visible',
+              transform: 'translate(-50%, 10%) scale(1.2)',
+              transition: 'transform .6s',
+              zIndex: 1,
+              fontSize: '1.3ch',
+            }
+          : {
+              overflow: 'visible',
+              transform: 'translate(0%, 0%) scale(1)',
+              transition: 'transform .3s',
+              zIndex: 0,
+              fontSize: '1.3ch',
+            }
+      }
+    >
       <CardContent>
-        <Collapse collapsedSize="400px" in={open} timeout="auto" style={open ? {} : { overflowY: 'scroll' }}>
+        <Collapse
+          collapsedSize="400px"
+          in={open}
+          timeout="auto"
+          style={open ? { width: '100%' } : { overflowY: 'scroll' }}
+        >
           <CardActions
             style={{
               position: 'sticky',
@@ -70,16 +97,15 @@ const ReactCodeBlock = ({ code }) => {
           <SyntaxHighlighter
             language="jsx"
             showLineNumbers={true}
-            showInlineLineNumbers={true} // <-- add this prop!
+            showInlineLineNumbers={true}
             wrapLines={true}
-            lineNumberStyle={{ minWidth: '1.2em' }}
+            lineNumberStyle={{ minWidth: '1.2em', maxWidth: '69ch' }}
             customStyle={{
               marginTop: -112,
               margin: 0,
               padding: '0.25em',
               wordBreak: 'break-all',
               whiteSpace: 'pre-wrap',
-              boxShadow: '0px 2px 4px rgba(50,50,93,.1)',
             }}
             style={darcula}
             children={beautify(code, options)}

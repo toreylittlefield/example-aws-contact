@@ -3,7 +3,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { darcula } from 'react-syntax-highlighter/dist/esm/styles/prism/';
 import * as beautify from 'js-beautify';
 import { IconButton, Tooltip, Collapse, Card, CardActions, CardContent } from '@material-ui/core';
-import { green } from '@material-ui/core/colors';
+import { green, yellow } from '@material-ui/core/colors';
 import { FileCopy, ExpandMoreTwoTone, ExpandLessTwoTone } from '@material-ui/icons';
 
 const options = {
@@ -28,42 +28,51 @@ const options = {
 
 const ReactCodeBlock = ({ code }) => {
   const [open, setOpen] = useState(false);
+
   const handleCopy = () => {
     window.navigator.clipboard.writeText(code);
   };
   const handleOpen = () => setOpen((prev) => !prev);
   return (
-    <Card>
+    <Card style={{ overflow: 'visible' }}>
       <CardContent>
-        <CardActions disableSpacing style={{ padding: '0', position: 'relative' }}>
-          <div style={{ display: 'flex', position: 'absolute', right: 0, top: 0, padding: '0.1em 2em' }}>
-            <Tooltip title="Copy Snippet" style={{ color: 'white' }}>
+        <Collapse collapsedSize="200px" in={open} timeout="auto" style={open ? {} : { overflowY: 'scroll' }}>
+          <CardActions
+            style={{
+              position: 'sticky',
+              top: 0,
+              justifyContent: 'flex-end',
+              width: 'max-content',
+              left: '100%',
+              display: 'grid',
+            }}
+          >
+            <Tooltip title="Copy Snippet" style={{ color: yellow[300] }}>
               <IconButton onClick={handleCopy}>
                 <FileCopy />
               </IconButton>
             </Tooltip>
             <Tooltip
-              color={open ? 'secondary' : ''}
+              color={open ? 'secondary' : 'default'}
               style={!open ? { color: green[500] } : {}}
               title={open ? `Collapse Snippet` : `Expand Snippet`}
             >
-              <IconButton>
+              <IconButton onClick={handleOpen}>
                 {open ? (
-                  <ExpandLessTwoTone color={'secondary'} onClick={handleOpen} />
+                  <ExpandLessTwoTone color={'secondary'} />
                 ) : (
-                  <ExpandMoreTwoTone style={{ color: green[500] }} onClick={handleOpen} />
+                  <ExpandMoreTwoTone style={{ color: green[500] }} />
                 )}
               </IconButton>
             </Tooltip>
-          </div>
-        </CardActions>
-        <Collapse collapsedSize="200px" in={open} timeout="auto" style={open ? '' : { overflowY: 'scroll' }}>
+          </CardActions>
           <SyntaxHighlighter
             language="jsx"
             showLineNumbers={true}
             showInlineLineNumbers={true} // <-- add this prop!
             wrapLines={true}
             customStyle={{
+              marginTop: -116,
               margin: 0,
               padding: '0.25em',
               wordBreak: 'break-all',

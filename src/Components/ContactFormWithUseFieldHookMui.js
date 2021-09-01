@@ -5,7 +5,7 @@ import * as Yup from 'yup';
 import { Button, TextField, TextareaAutosize } from '@material-ui/core';
 import { Send as SendIcon } from '@material-ui/icons';
 
-const TEST_SITE_KEY = `6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI`;
+const TEST_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
 
 const RecaptchaComponent = ({ children, reCaptchaRef, ...props }) => {
   const [field, meta, helpers] = useField({ ...props, type: 'checkbox' });
@@ -46,7 +46,13 @@ export const ContactFormWithUseFieldHookMui = () => {
 
   return (
     <Formik
-      initialValues={{ firstName: '', lastName: '', email: '', recaptcha: '' }}
+      initialValues={{
+        firstName: '',
+        lastName: '',
+        email: '',
+        recaptcha: '',
+        submissionCount: 0,
+      }}
       validationSchema={Yup.object({
         firstName: Yup.string()
           .max(15, 'Must be 15 characters or less')
@@ -68,14 +74,23 @@ export const ContactFormWithUseFieldHookMui = () => {
           alert(JSON.stringify(values, null, 2));
           setSubmitting(false);
           reCaptchaRef.current.reset();
+          // eslint-disable-next-line no-param-reassign
+          values.submissionCount += 1;
           resetForm({
-            values: { firstName: '', lastName: '', email: '', recaptcha: '' },
+            submitCount: values.submissionCount,
+            values: {
+              firstName: '',
+              lastName: '',
+              email: '',
+              recaptcha: '',
+              submissionCount: values.submissionCount,
+            },
           });
         }, 3000);
       }}
     >
       {/* formik uses render props */}
-      {({ errors, touched, isSubmitting, submitCount, dirty }) => (
+      {({ errors, touched, isSubmitting, dirty }) => (
         <Form className="contact-form">
           <Field
             name="firstName"
@@ -121,11 +136,6 @@ export const ContactFormWithUseFieldHookMui = () => {
           >
             Submit
           </Button>
-          {JSON.stringify(
-            { errors, touched, isSubmitting, submitCount },
-            null,
-            2
-          )}
         </Form>
       )}
     </Formik>
@@ -181,7 +191,13 @@ export const ContactFormWithUseFieldHookMui = () => {
 
   return (
     <Formik
-      initialValues={{ firstName: '', lastName: '', email: '', recaptcha: '' }}
+      initialValues={{
+        firstName: '',
+        lastName: '',
+        email: '',
+        recaptcha: '',
+        submissionCount: 0,
+      }}
       validationSchema={Yup.object({
         firstName: Yup.string()
           .max(15, 'Must be 15 characters or less')
@@ -203,14 +219,23 @@ export const ContactFormWithUseFieldHookMui = () => {
           alert(JSON.stringify(values, null, 2));
           setSubmitting(false);
           reCaptchaRef.current.reset();
+          // eslint-disable-next-line no-param-reassign
+          values.submissionCount += 1;
           resetForm({
-            values: { firstName: '', lastName: '', email: '', recaptcha: '' },
+            submitCount: values.submissionCount,
+            values: {
+              firstName: '',
+              lastName: '',
+              email: '',
+              recaptcha: '',
+              submissionCount: values.submissionCount,
+            },
           });
         }, 3000);
       }}
     >
       {/* formik uses render props */}
-      {({ errors, touched, isSubmitting, submitCount, dirty }) => (
+      {({ errors, touched, isSubmitting, dirty }) => (
         <Form className="contact-form">
           <Field
             name="firstName"
@@ -256,15 +281,9 @@ export const ContactFormWithUseFieldHookMui = () => {
           >
             Submit
           </Button>
-          {JSON.stringify(
-            { errors, touched, isSubmitting, submitCount },
-            null,
-            2
-          )}
         </Form>
       )}
     </Formik>
   );
-};
-`,
+};`,
 ].toString();

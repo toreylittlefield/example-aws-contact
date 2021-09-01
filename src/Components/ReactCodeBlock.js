@@ -45,6 +45,7 @@ const ReactCodeBlock = ({ code }) => {
               width: 'max-content',
               left: '100%',
               display: 'grid',
+              willChange: 'transform',
             }}
           >
             <Tooltip title="Copy Snippet" style={{ color: yellow[300] }}>

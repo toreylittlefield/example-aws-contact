@@ -60,8 +60,8 @@ export const ContactFormWithUseFieldHookMui = () => {
           .required('Prove You Are Not A Robot'),
       })}
       /**
-       * if onSubmit is async setSubmitting does not need to be called, it is invoked automatically once resolved
-       * @see https://formik.org/docs/api/withFormik#the-formikbag
+       * @linkplain if onSubmit is async setSubmitting does not need to be called, it is invoked automatically once resolved
+       * @tutorial https://formik.org/docs/api/withFormik#the-formikbag
        */
       onSubmit={(values, { resetForm, setSubmitting }) => {
         setTimeout(() => {

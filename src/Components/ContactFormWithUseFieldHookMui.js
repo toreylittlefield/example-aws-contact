@@ -29,7 +29,11 @@ const RecaptchaComponent = ({ children, reCaptchaRef, ...props }) => {
       {meta.touched && meta.error ? (
         <ErrorMessage name="recaptcha" />
       ) : field.value ? (
-        <TextareaAutosize minRows={3} aria-label="empty textarea" placeholder="Empty">
+        <TextareaAutosize
+          minRows={3}
+          aria-label="empty textarea"
+          placeholder="Empty"
+        >
           {field.value}
         </TextareaAutosize>
       ) : null}
@@ -44,10 +48,16 @@ export const ContactFormWithUseFieldHookMui = () => {
     <Formik
       initialValues={{ firstName: '', lastName: '', email: '', recaptcha: '' }}
       validationSchema={Yup.object({
-        firstName: Yup.string().max(15, 'Must be 15 characters or less').required('First Name Is Required'),
-        lastName: Yup.string().max(20, 'Must be 20 characters or less').required('Required'),
+        firstName: Yup.string()
+          .max(15, 'Must be 15 characters or less')
+          .required('First Name Is Required'),
+        lastName: Yup.string()
+          .max(20, 'Must be 20 characters or less')
+          .required('Required'),
         email: Yup.string().email('Invalid email address').required('Required'),
-        recaptcha: Yup.string().min(1, 'Prove You Are Not A Robot').required('Prove You Are Not A Robot'),
+        recaptcha: Yup.string()
+          .min(1, 'Prove You Are Not A Robot')
+          .required('Prove You Are Not A Robot'),
       })}
       onSubmit={async (values, { resetForm, setSubmitting }) => {
         setSubmitting(true);
@@ -60,7 +70,7 @@ export const ContactFormWithUseFieldHookMui = () => {
       }}
     >
       {/* formik uses render props */}
-      {({ errors, touched, isSubmitting }) => (
+      {({ errors, touched, isSubmitting, submitCount }) => (
         <Form className="contact-form">
           <Field
             name="firstName"
@@ -106,6 +116,11 @@ export const ContactFormWithUseFieldHookMui = () => {
           >
             Submit
           </Button>
+          {JSON.stringify(
+            { errors, touched, isSubmitting, submitCount },
+            null,
+            2
+          )}
         </Form>
       )}
     </Formik>

@@ -36,10 +36,16 @@ const ContactForm = () => {
   //   };
 
   const validationSchema = Yup.object({
-    firstName: Yup.string().max(15, 'Must be 15 characters or less').required('Required'),
-    lastName: Yup.string().max(20, 'Must be 20 characters or less').required('Required'),
+    firstName: Yup.string()
+      .max(15, 'Must be 15 characters or less')
+      .required('Required'),
+    lastName: Yup.string()
+      .max(20, 'Must be 20 characters or less')
+      .required('Required'),
     email: Yup.string().email('Invalid email address').required('Required'),
-    recaptcha: Yup.string().min(1, 'Prove You Are Not A Robot').required('Prove You Are Not A Robot'),
+    recaptcha: Yup.string()
+      .min(1, 'Prove You Are Not A Robot')
+      .required('Prove You Are Not A Robot'),
   });
 
   // Note that we have to initialize ALL of fields with values. These
@@ -71,7 +77,9 @@ const ContactForm = () => {
         onBlur={formik.handleBlur}
         value={formik.values.firstName}
       />
-      {formik.touched.firstName && formik.errors.firstName ? <div>{formik.errors.firstName}</div> : null}
+      {formik.touched.firstName && formik.errors.firstName ? (
+        <div>{formik.errors.firstName}</div>
+      ) : null}
       <label htmlFor="lastName">Last Name</label>
       <input
         id="lastName"
@@ -81,7 +89,9 @@ const ContactForm = () => {
         onBlur={formik.handleBlur}
         value={formik.values.lastName}
       />
-      {formik.touched.lastName && formik.errors.lastName ? <div>{formik.errors.lastName}</div> : null}
+      {formik.touched.lastName && formik.errors.lastName ? (
+        <div>{formik.errors.lastName}</div>
+      ) : null}
       <label htmlFor="email">Email Address</label>
       <input
         id="email"
@@ -91,7 +101,9 @@ const ContactForm = () => {
         onBlur={formik.handleBlur}
         value={formik.values.email}
       />
-      {formik.touched.email && formik.errors.email ? <div>{formik.errors.email}</div> : null}
+      {formik.touched.email && formik.errors.email ? (
+        <div>{formik.errors.email}</div>
+      ) : null}
       <ReCAPTCHA
         style={{ display: 'inline-block' }}
         size="compact"

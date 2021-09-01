@@ -42,10 +42,16 @@ export const ContactFormWithUseFieldHook = () => {
     <Formik
       initialValues={{ firstName: '', lastName: '', email: '', recaptcha: '' }}
       validationSchema={Yup.object({
-        firstName: Yup.string().max(15, 'Must be 15 characters or less').required('Required'),
-        lastName: Yup.string().max(20, 'Must be 20 characters or less').required('Required'),
+        firstName: Yup.string()
+          .max(15, 'Must be 15 characters or less')
+          .required('Required'),
+        lastName: Yup.string()
+          .max(20, 'Must be 20 characters or less')
+          .required('Required'),
         email: Yup.string().email('Invalid email address').required('Required'),
-        recaptcha: Yup.string().min(1, 'Prove You Are Not A Robot').required('Prove You Are Not A Robot'),
+        recaptcha: Yup.string()
+          .min(1, 'Prove You Are Not A Robot')
+          .required('Prove You Are Not A Robot'),
       })}
       onSubmit={async (values, { resetForm, setSubmitting }) => {
         setTimeout(() => {

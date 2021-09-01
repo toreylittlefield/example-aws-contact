@@ -90,7 +90,7 @@ export const ContactFormWithUseFieldHookMui = () => {
       }}
     >
       {/* formik uses render props */}
-      {({ errors, touched, isSubmitting, dirty }) => (
+      {({ errors, touched, isSubmitting }) => (
         <Form className="contact-form">
           <Field
             name="firstName"
@@ -128,7 +128,7 @@ export const ContactFormWithUseFieldHookMui = () => {
           <RecaptchaComponent name="recaptcha" reCaptchaRef={reCaptchaRef} />
 
           <Button
-            disabled={isSubmitting || !dirty}
+            disabled={isSubmitting}
             color="primary"
             variant="contained"
             type="submit"
@@ -273,7 +273,7 @@ export const contactFormWithUseFieldHookMuiCodeString = [
             <RecaptchaComponent name="recaptcha" reCaptchaRef={reCaptchaRef} />
   
             <Button
-              disabled={isSubmitting || !dirty}
+              disabled={isSubmitting}
               color="primary"
               variant="contained"
               type="submit"

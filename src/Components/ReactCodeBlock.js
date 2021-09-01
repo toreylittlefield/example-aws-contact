@@ -28,7 +28,7 @@ const options = {
   indent_empty_lines: false,
 };
 
-const ReactCodeBlock = ({ code }) => {
+export const ReactCodeBlock = ({ code }) => {
   const [open, setOpen] = useState(false);
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up('sm'));
@@ -115,5 +115,3 @@ const ReactCodeBlock = ({ code }) => {
     </Card>
   );
 };
-
-export default ReactCodeBlock;

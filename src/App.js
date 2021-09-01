@@ -1,6 +1,8 @@
 import './App.css';
 import ContactForm, { contactFormCodeString } from './Components/ContactForm';
-import ContactFormReactContext from './Components/ContactFormReactContext';
+import ContactFormReactContext, {
+  contactFormReactContextCodeString,
+} from './Components/ContactFormReactContext';
 import ContactFormWithFieldProps from './Components/ContactFormWithFieldProps';
 import ContactFormWithUseFieldHook from './Components/ContactFormWithUseFieldHook';
 import ReactCodeBlock from './Components/ReactCodeBlock';
@@ -28,8 +30,9 @@ const App = () => {
         <div className="container">
           <h2>Formik React Context</h2>
           <p>Uses React Context / FormikContext</p>
+          <ContactFormReactContext />
         </div>
-        <ContactFormReactContext />
+        <ReactCodeBlock code={contactFormReactContextCodeString} />
       </section>
       <section>
         <div className="container">

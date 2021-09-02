@@ -15,12 +15,10 @@ export const NavBar = ({ handleChange }) => {
       style={{ backgroundColor: amber[300], color: common.black }}
     >
       <Tabs
-        // variant="fullWidth"
         onChange={handleChange}
-        value={handlePathName}
+        value={location.path ?? handlePathName}
         variant="scrollable"
         scrollButtons="on"
-        // onChange={handleChange}
         aria-label="nav tabs example"
       >
         <Tab

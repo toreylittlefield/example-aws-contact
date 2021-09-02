@@ -116,7 +116,6 @@ const ContactForm = () => {
         onBlur={formik.handleBlur}
         onChange={async () => {
           const token = await reCaptchaRef.current.getValue();
-          console.log(token);
           formik.setFieldValue('recaptcha', token);
         }}
       />
@@ -242,7 +241,6 @@ const ContactForm = () => {
         onBlur={formik.handleBlur}
         onChange={async () => {
           const token = await reCaptchaRef.current.getValue();
-          console.log(token);
           formik.setFieldValue('recaptcha', token);
         }}
       />

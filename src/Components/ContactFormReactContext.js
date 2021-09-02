@@ -24,7 +24,6 @@ const RecaptchaComponent = ({
       {...getFieldProps('recaptcha')}
       onChange={async () => {
         const token = await reCaptchaRef.current.getValue();
-        console.log(token);
         setFieldValue('recaptcha', token);
       }}
     />
@@ -120,7 +119,6 @@ const RecaptchaComponent = ({
         {...getFieldProps('recaptcha')}
         onChange={async () => {
           const token = await reCaptchaRef.current.getValue();
-          console.log(token);
           setFieldValue('recaptcha', token);
         }}
       />

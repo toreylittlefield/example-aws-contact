@@ -22,7 +22,6 @@ const RecaptchaComponent = ({ children, reCaptchaRef, ...props }) => {
         id="recaptcha"
         onChange={async () => {
           const token = await reCaptchaRef.current.getValue();
-          console.log(token);
           helpers.setValue(token);
         }}
       />
@@ -167,7 +166,6 @@ export const contactFormWithUseFieldHookMuiCodeString = [
           id="recaptcha"
           onChange={async () => {
             const token = await reCaptchaRef.current.getValue();
-            console.log(token);
             helpers.setValue(token);
           }}
         />

@@ -20,7 +20,6 @@ const RecaptchaComponent = ({ children, reCaptchaRef, ...props }) => {
         id="recaptcha"
         onChange={async () => {
           const token = await reCaptchaRef.current.getValue();
-          console.log(token);
           helpers.setValue(token);
         }}
       />
@@ -105,7 +104,6 @@ const RecaptchaComponent = ({ children, reCaptchaRef, ...props }) => {
         id="recaptcha"
         onChange={async () => {
           const token = await reCaptchaRef.current.getValue();
-          console.log(token);
           helpers.setValue(token);
         }}
       />

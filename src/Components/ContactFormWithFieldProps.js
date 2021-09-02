@@ -70,7 +70,7 @@ const ContactFormWithFieldProps = () => {
         {...formik.getFieldProps('recaptcha')}
         onChange={async () => {
           const token = await reCaptchaRef.current.getValue();
-          console.log(token);
+
           formik.setFieldValue('recaptcha', token);
         }}
       />
@@ -145,7 +145,6 @@ const ContactFormWithFieldProps = () => {
         {...formik.getFieldProps('recaptcha')}
         onChange={async () => {
           const token = await reCaptchaRef.current.getValue();
-          console.log(token);
           formik.setFieldValue('recaptcha', token);
         }}
       />

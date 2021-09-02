@@ -21,7 +21,6 @@ import {
 const App = () => {
   const [viewIndex, setviewIndex] = useState(0);
   const handleChange = (event) => {
-    console.log({ event });
     const el =
       event.target.parentElement.getAttribute('dataindex') ??
       event.target.getAttribute('dataindex');

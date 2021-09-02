@@ -1,5 +1,7 @@
 /* eslint-disable no-unused-vars */
 import './App.css';
+// import SwipeableViews from 'react-swipeable-views';
+
 import {
   BrowserRouter as Router,
   Switch,
@@ -21,24 +23,12 @@ const App = () => (
     <div className="App">
       <NavBar />
       <Switch>
-        <Route path="/ExampleOne">
-          <ExampleOne />
-        </Route>
-        <Route path="/ExampleTwo">
-          <ExampleTwo />
-        </Route>
-        <Route path="/ExampleThree">
-          <ExampleThree />
-        </Route>
-        <Route path="/ExampleFour">
-          <ExampleFour />
-        </Route>
-        <Route path="/ExampleFive">
-          <ExampleFive />
-        </Route>
-        <Route path="*">
-          <Redirect to="/ExampleOne" />
-        </Route>
+        <Route path="/ExampleOne" component={ExampleOne} />
+        <Route path="/ExampleTwo" component={ExampleTwo} />
+        <Route path="/ExampleThree" component={ExampleThree} />
+        <Route path="/ExampleFour" component={ExampleFour} />
+        <Route path="/ExampleFive" component={ExampleFive} />
+        <Redirect from="*" to="/ExampleOne" />
       </Switch>
     </div>
   </Router>

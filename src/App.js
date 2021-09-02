@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import './App.css';
 import SwipeableViews from 'react-swipeable-views';
 
@@ -13,10 +13,38 @@ import {
   ExampleFive,
 } from './Pages';
 
+const routes = [
+  {
+    path: '/ExampleOne',
+    component: ExampleOne,
+  },
+  {
+    path: '/ExampleTwo',
+    component: ExampleTwo,
+  },
+  {
+    path: '/ExampleThree',
+    component: ExampleThree,
+  },
+  {
+    path: '/ExampleFour',
+    component: ExampleFour,
+  },
+  {
+    path: '/ExampleFive',
+    component: ExampleFive,
+  },
+];
+
 const App = () => {
   const history = useHistory();
-  const swipeRef = useRef(null);
-  const [viewIndex, setviewIndex] = useState(0);
+  const initialState = () => {
+    const pathOnLoad = history.location.pathname;
+    const initIndex = routes.findIndex((route) => route.path === pathOnLoad);
+    return initIndex !== -1 ? initIndex : 0;
+  };
+  console.log({ history });
+  const [viewIndex, setviewIndex] = useState(initialState());
   const handleChange = (event) => {
     const el =
       event.target.parentElement.getAttribute('dataindex') ??
@@ -24,8 +52,7 @@ const App = () => {
     setviewIndex(parseInt(el) ?? viewIndex + 1);
   };
   const handleChangeIndex = (index) => {
-    if (!swipeRef.current) return;
-    const pathTo = swipeRef.current.props.children[index].props.path;
+    const pathTo = routes[index].path;
     setviewIndex(index);
     history.push(pathTo);
   };
@@ -34,17 +61,15 @@ const App = () => {
       <NavBar handleChange={handleChange} />
       <Switch>
         <SwipeableViews
-          ref={swipeRef}
           index={viewIndex}
           onChangeIndex={handleChangeIndex}
+          enableMouseEvents
         >
-          <Route path="/ExampleOne" component={ExampleOne} />
-          <Route path="/ExampleTwo" component={ExampleTwo} />
-          <Route path="/ExampleThree" component={ExampleThree} />
-          <Route path="/ExampleFour" component={ExampleFour} />
-          <Route path="/ExampleFive" component={ExampleFive} />
+          {routes.map((route) => (
+            <Route key={route.path} {...route} />
+          ))}
+          <Redirect from="*" to="/ExampleOne" />
         </SwipeableViews>
-        <Redirect from="*" to="/ExampleOne" />
       </Switch>
     </div>
   );

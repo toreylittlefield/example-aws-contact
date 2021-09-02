@@ -1,6 +1,6 @@
-/* eslint-disable no-unused-vars */
+import { useState } from 'react';
 import './App.css';
-// import SwipeableViews from 'react-swipeable-views';
+import SwipeableViews from 'react-swipeable-views';
 
 import {
   BrowserRouter as Router,
@@ -18,20 +18,41 @@ import {
   ExampleFive,
 } from './Pages';
 
-const App = () => (
-  <Router>
-    <div className="App">
-      <NavBar />
-      <Switch>
-        <Route path="/ExampleOne" component={ExampleOne} />
-        <Route path="/ExampleTwo" component={ExampleTwo} />
-        <Route path="/ExampleThree" component={ExampleThree} />
-        <Route path="/ExampleFour" component={ExampleFour} />
-        <Route path="/ExampleFive" component={ExampleFive} />
-        <Redirect from="*" to="/ExampleOne" />
-      </Switch>
-    </div>
-  </Router>
-);
+const App = () => {
+  const [viewIndex, setviewIndex] = useState(0);
+  const handleChange = (event) => {
+    console.log({ event });
+    const el =
+      event.target.parentElement.getAttribute('dataindex') ??
+      event.target.getAttribute('dataindex');
+    console.log({ el });
+    setviewIndex(parseInt(el) ?? viewIndex + 1);
+  };
+  const handleChangeIndex = (index) => {
+    console.log({ index });
+    setviewIndex(index);
+  };
+  return (
+    <Router>
+      <div className="App">
+        <NavBar handleChange={handleChange} />
+        <Switch>
+          <SwipeableViews
+            index={viewIndex}
+            onChangeIndex={handleChangeIndex}
+            // ref={innerRef}
+          >
+            <Route path="/ExampleOne" component={ExampleOne} />
+            <Route path="/ExampleTwo" component={ExampleTwo} />
+            <Route path="/ExampleThree" component={ExampleThree} />
+            <Route path="/ExampleFour" component={ExampleFour} />
+            <Route path="/ExampleFive" component={ExampleFive} />
+          </SwipeableViews>
+          <Redirect from="*" to="/ExampleOne" />
+        </Switch>
+      </div>
+    </Router>
+  );
+};
 
 export default App;

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 import SwipeableViews from 'react-swipeable-views';
 
@@ -38,12 +38,17 @@ const routes = [
 
 const App = () => {
   const history = useHistory();
-  const initialState = () => {
-    const pathOnLoad = history.location.pathname;
-    const initIndex = routes.findIndex((route) => route.path === pathOnLoad);
-    return initIndex !== -1 ? initIndex : 0;
-  };
-  const [viewIndex, setviewIndex] = useState(initialState());
+  const [viewIndex, setviewIndex] = useState(null);
+
+  useEffect(() => {
+    const initialState = () => {
+      const pathOnLoad = history.location.pathname;
+      const initIndex = routes.findIndex((route) => route.path === pathOnLoad);
+      return initIndex === -1 ? 0 : initIndex;
+    };
+    setviewIndex(initialState);
+  }, []);
+
   const handleChange = (event) => {
     const el =
       event.target.parentElement.getAttribute('dataindex') ??
@@ -51,10 +56,12 @@ const App = () => {
     setviewIndex(parseInt(el) ?? viewIndex + 1);
   };
   const handleChangeIndex = (index) => {
+    if (index >= routes.length) return;
     const pathTo = routes[index].path;
     setviewIndex(index);
     history.push(pathTo);
   };
+
   return (
     <div className="App">
       <NavBar handleChange={handleChange} />
@@ -63,12 +70,15 @@ const App = () => {
           index={viewIndex}
           onChangeIndex={handleChangeIndex}
           enableMouseEvents
+          disableLazyLoading
         >
           {routes.map((route) => (
             <Route key={route.path} {...route} />
           ))}
-          <Redirect from="*" to="/ExampleOne" />
         </SwipeableViews>
+        <Route path="*">
+          <Redirect to="/ExampleOne" />
+        </Route>
       </Switch>
     </div>
   );

@@ -1,9 +1,8 @@
 /* eslint-disable no-unused-vars */
 import './App.css';
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
-import { AppBar, Tabs, Tab } from '@material-ui/core';
-import { amber, common } from '@material-ui/core/colors';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import {
+  NavBar,
   ContactFormReactContext,
   contactFormReactContextCodeString,
   ContactFormWithUseFieldHook,
@@ -13,41 +12,21 @@ import {
 } from './Components';
 
 import { Section } from './Components/Section';
-import { ExampleOne, ExampleTwo } from './Pages';
+import { ExampleOne, ExampleTwo, ExampleThree } from './Pages';
 
 const App = () => (
   <Router>
     <div className="App">
-      <AppBar
-        position="static"
-        style={{ backgroundColor: amber[300], color: common.black }}
-      >
-        <Tabs
-          variant="fullWidth"
-          // // value={value}
-          // onChange={handleChange}
-          aria-label="nav tabs example"
-        >
-          <Tab
-            to="/ExampleOne"
-            value="/ExampleOne"
-            component={Link}
-            label="Example 1: Boilerplate"
-          />
-          <Tab
-            to="/ExampleTwo"
-            value="/ExampleTwo"
-            component={Link}
-            label="Example 2: Field Props"
-          />
-        </Tabs>
-      </AppBar>
+      <NavBar />
       <Switch>
         <Route path="/ExampleOne">
           <ExampleOne />
         </Route>
         <Route path="/ExampleTwo">
           <ExampleTwo />
+        </Route>
+        <Route path="/ExampleThree">
+          <ExampleThree />
         </Route>
 
         <Section

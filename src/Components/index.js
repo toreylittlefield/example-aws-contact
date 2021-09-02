@@ -4,3 +4,4 @@ export * from './ContactFormWithFieldProps';
 export * from './ContactFormWithUseFieldHook';
 export * from './ContactFormWithUseFieldHookMui';
 export * from './ReactCodeBlock';
+export * from './NavBar';

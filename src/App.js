@@ -43,7 +43,6 @@ const App = () => {
     const initIndex = routes.findIndex((route) => route.path === pathOnLoad);
     return initIndex !== -1 ? initIndex : 0;
   };
-  console.log({ history });
   const [viewIndex, setviewIndex] = useState(initialState());
   const handleChange = (event) => {
     const el =

@@ -4,12 +4,8 @@ import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import { AppBar, Tabs, Tab } from '@material-ui/core';
 import { amber, common } from '@material-ui/core/colors';
 import {
-  ContactForm,
-  contactFormCodeString,
   ContactFormReactContext,
   contactFormReactContextCodeString,
-  ContactFormWithFieldProps,
-  contactFormWithFieldPropsCodeString,
   ContactFormWithUseFieldHook,
   ContactFormWithUseFieldHookCodeString,
   ContactFormWithUseFieldHookMui,
@@ -17,7 +13,7 @@ import {
 } from './Components';
 
 import { Section } from './Components/Section';
-import { ExampleOne } from './Pages';
+import { ExampleOne, ExampleTwo } from './Pages';
 
 const App = () => (
   <Router>
@@ -38,18 +34,22 @@ const App = () => (
             component={Link}
             label="Example 1: Boilerplate"
           />
+          <Tab
+            to="/ExampleTwo"
+            value="/ExampleTwo"
+            component={Link}
+            label="Example 2: Field Props"
+          />
         </Tabs>
       </AppBar>
       <Switch>
         <Route path="/ExampleOne">
           <ExampleOne />
         </Route>
-        <Section
-          sectionTitle="Formik With Field Props"
-          sectionDescription="Example reduces some of the boilerplate from the above example using field props"
-          ComponentToRender={ContactFormWithFieldProps}
-          codeString={contactFormWithFieldPropsCodeString}
-        />
+        <Route path="/ExampleTwo">
+          <ExampleTwo />
+        </Route>
+
         <Section
           sectionTitle="Formik React Context"
           sectionDescription="Formik basically uses the React Context which even further abstracts"

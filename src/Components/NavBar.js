@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { AppBar, Tabs, Tab } from '@material-ui/core';
 import { amber, common } from '@material-ui/core/colors';
 
-export const NavBar = () => {
+export const NavBar = ({ handleChange }) => {
   const location = useLocation();
   const handlePathName =
     location.pathname === '/' || !location.key
@@ -16,7 +16,7 @@ export const NavBar = () => {
     >
       <Tabs
         // variant="fullWidth"
-
+        onChange={handleChange}
         value={handlePathName}
         variant="scrollable"
         scrollButtons="on"
@@ -26,6 +26,7 @@ export const NavBar = () => {
         <Tab
           to="/ExampleOne"
           value="/ExampleOne"
+          dataindex={0}
           component={Link}
           label="Example 1: Boilerplate"
         />
@@ -33,23 +34,27 @@ export const NavBar = () => {
           to="/ExampleTwo"
           value="/ExampleTwo"
           component={Link}
+          dataindex={1}
           label="Example 2: Field Props"
         />
         <Tab
           to="/ExampleThree"
           value="/ExampleThree"
+          dataindex={2}
           component={Link}
           label="Example 3: Formik Context"
         />
         <Tab
           to="/ExampleFour"
           value="/ExampleFour"
+          dataindex={3}
           component={Link}
           label="Example 4: useField Hook"
         />
         <Tab
           to="/ExampleFive"
           value="/ExampleFive"
+          dataindex={4}
           component={Link}
           label="Example 5: Material UI"
         />

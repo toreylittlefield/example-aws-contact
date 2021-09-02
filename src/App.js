@@ -25,11 +25,9 @@ const App = () => {
     const el =
       event.target.parentElement.getAttribute('dataindex') ??
       event.target.getAttribute('dataindex');
-    console.log({ el });
     setviewIndex(parseInt(el) ?? viewIndex + 1);
   };
   const handleChangeIndex = (index) => {
-    console.log({ index });
     setviewIndex(index);
   };
   return (

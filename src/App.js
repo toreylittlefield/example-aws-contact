@@ -2,7 +2,13 @@ import { useState, useEffect } from 'react';
 import './App.css';
 import SwipeableViews from 'react-swipeable-views';
 
-import { Switch, Route, Redirect, useHistory } from 'react-router-dom';
+import {
+  Switch,
+  Route,
+  Redirect,
+  useHistory,
+  useLocation,
+} from 'react-router-dom';
 import { NavBar } from './Components';
 
 import {
@@ -38,16 +44,24 @@ const routes = [
 
 const App = () => {
   const history = useHistory();
+  const location = useLocation();
   const [viewIndex, setviewIndex] = useState(null);
 
+  const initialState = () => {
+    const pathOnLoad = history.location.pathname;
+    const initIndex = routes.findIndex((route) => route.path === pathOnLoad);
+    return initIndex === -1 ? 0 : initIndex;
+  };
+
   useEffect(() => {
-    const initialState = () => {
-      const pathOnLoad = history.location.pathname;
-      const initIndex = routes.findIndex((route) => route.path === pathOnLoad);
-      return initIndex === -1 ? 0 : initIndex;
-    };
     setviewIndex(initialState);
   }, []);
+
+  useEffect(() => {
+    if (history.action === 'POP') {
+      setviewIndex(initialState);
+    }
+  }, [location]);
 
   const handleChange = (event) => {
     const el =

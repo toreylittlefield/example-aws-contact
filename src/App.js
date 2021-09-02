@@ -1,13 +1,8 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import './App.css';
 import SwipeableViews from 'react-swipeable-views';
 
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Redirect,
-} from 'react-router-dom';
+import { Switch, Route, Redirect, useHistory } from 'react-router-dom';
 import { NavBar } from './Components';
 
 import {
@@ -19,6 +14,8 @@ import {
 } from './Pages';
 
 const App = () => {
+  const history = useHistory();
+  const swipeRef = useRef(null);
   const [viewIndex, setviewIndex] = useState(0);
   const handleChange = (event) => {
     const el =
@@ -27,28 +24,29 @@ const App = () => {
     setviewIndex(parseInt(el) ?? viewIndex + 1);
   };
   const handleChangeIndex = (index) => {
+    if (!swipeRef.current) return;
+    const pathTo = swipeRef.current.props.children[index].props.path;
     setviewIndex(index);
+    history.push(pathTo);
   };
   return (
-    <Router>
-      <div className="App">
-        <NavBar handleChange={handleChange} />
-        <Switch>
-          <SwipeableViews
-            index={viewIndex}
-            onChangeIndex={handleChangeIndex}
-            // ref={innerRef}
-          >
-            <Route path="/ExampleOne" component={ExampleOne} />
-            <Route path="/ExampleTwo" component={ExampleTwo} />
-            <Route path="/ExampleThree" component={ExampleThree} />
-            <Route path="/ExampleFour" component={ExampleFour} />
-            <Route path="/ExampleFive" component={ExampleFive} />
-          </SwipeableViews>
-          <Redirect from="*" to="/ExampleOne" />
-        </Switch>
-      </div>
-    </Router>
+    <div className="App">
+      <NavBar handleChange={handleChange} />
+      <Switch>
+        <SwipeableViews
+          ref={swipeRef}
+          index={viewIndex}
+          onChangeIndex={handleChangeIndex}
+        >
+          <Route path="/ExampleOne" component={ExampleOne} />
+          <Route path="/ExampleTwo" component={ExampleTwo} />
+          <Route path="/ExampleThree" component={ExampleThree} />
+          <Route path="/ExampleFour" component={ExampleFour} />
+          <Route path="/ExampleFive" component={ExampleFive} />
+        </SwipeableViews>
+        <Redirect from="*" to="/ExampleOne" />
+      </Switch>
+    </div>
   );
 };
 

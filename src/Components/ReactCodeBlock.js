@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import virtualizedRenderer from 'react-syntax-highlighter-virtualized-renderer';
 import { darcula } from 'react-syntax-highlighter/dist/esm/styles/prism/';
 import * as beautify from 'js-beautify';
 import {
@@ -54,10 +55,11 @@ export const ReactCodeBlock = ({ code }) => {
         open && matches
           ? {
               overflow: 'visible',
-              transform: 'translate(-50%, 10%) scale(1.2)',
+              transform: 'translate(-50%, 40%) scale(2)',
               transition: 'transform .6s',
               zIndex: 1,
               fontSize: '1.3ch',
+              height: 'fit-content',
             }
           : {
               overflow: 'visible',
@@ -73,7 +75,7 @@ export const ReactCodeBlock = ({ code }) => {
           collapsedSize="400px"
           in={open}
           timeout="auto"
-          style={open ? { width: '100%' } : { overflowY: 'scroll' }}
+          style={open ? { width: '100%' } : {}}
         >
           <CardActions
             style={{
@@ -84,6 +86,8 @@ export const ReactCodeBlock = ({ code }) => {
               left: '100%',
               display: 'grid',
               willChange: 'transform',
+              zIndex: 1,
+              paddingRight: '1.5em',
             }}
           >
             <Tooltip title="Copy Snippet" style={{ color: yellow[300] }}>
@@ -110,7 +114,11 @@ export const ReactCodeBlock = ({ code }) => {
             showLineNumbers
             showInlineLineNumbers
             wrapLines
-            lineNumberStyle={{ minWidth: '1.2em', maxWidth: '69ch' }}
+            lineNumberStyle={{
+              minWidth: '1.2em',
+              maxWidth: '69ch',
+            }}
+            renderer={virtualizedRenderer()}
             customStyle={{
               marginTop: -112,
               margin: 0,

@@ -7,7 +7,7 @@ export const Section = ({
   ComponentToRender = {},
   codeString = '',
 }) => (
-  <section>
+  <section className="page">
     <div className="container">
       <h2>{sectionTitle}</h2>
       <p>{sectionDescription}</p>

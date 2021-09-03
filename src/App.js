@@ -99,6 +99,7 @@ const App = () => {
 
   const onExit = (node) => {
     if (!node) return;
+    gsap.set(document.body, { overflow: 'hidden' });
     gsap.to([node.children], {
       xPercent: -10,
       ease: 'power3.In',

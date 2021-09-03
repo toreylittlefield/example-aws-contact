@@ -24,3 +24,7 @@ section {
   display: grid;
   place-content: center;
 }
+
+pre {
+  height: 400px;
+}

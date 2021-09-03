@@ -87,7 +87,6 @@ const App = () => {
 
   const onEnter = (node) => {
     if (!node) return;
-    gsap.set(document.body, { overflow: 'hidden' });
     gsap.set(node, { display: 'none' });
     gsap.from([node.children], {
       onStart: () => gsap.set(node, { clearProps: 'display' }),

@@ -84,7 +84,8 @@ const App = () => {
     gsap.set(document.body, { overflow: 'hidden' });
     gsap.set(node, { display: 'none' });
     gsap.from([node.children], {
-      onStart: () => gsap.set(node, { display: '' }),
+      onStart: () => gsap.set(node, { clearProps: 'display' }),
+      onComplete: () => gsap.set(document.body, { clearProps: 'overflow' }),
       xPercent: 10,
       delay: 1.5,
       ease: 'power3.Out',

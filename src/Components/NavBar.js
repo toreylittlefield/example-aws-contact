@@ -12,7 +12,12 @@ export const NavBar = ({ handleChange }) => {
   return (
     <AppBar
       position="static"
-      style={{ backgroundColor: amber[300], color: common.black }}
+      style={{
+        backgroundColor: amber[300],
+        color: common.black,
+        zIndex: 2,
+        position: 'relative',
+      }}
     >
       <Tabs
         onChange={handleChange}

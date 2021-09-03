@@ -40,7 +40,7 @@ const options = {
   indent_empty_lines: false,
 };
 
-export const ReactCodeBlock = ({ code }) => {
+export const ReactCodeBlock = React.memo(({ code }) => {
   const [open, setOpen] = useState(false);
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up('sm'));
@@ -134,4 +134,4 @@ export const ReactCodeBlock = ({ code }) => {
       </CardContent>
     </Card>
   );
-};
+});

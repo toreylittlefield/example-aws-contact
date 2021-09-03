@@ -1,5 +1,8 @@
+/* eslint-disable no-unused-vars */
 import { useState, useEffect } from 'react';
 import './App.css';
+import { Transition, TransitionGroup } from 'react-transition-group';
+import { gsap } from 'gsap';
 
 import {
   Switch,
@@ -74,34 +77,65 @@ const App = () => {
   //   setviewIndex(index);
   //   history.push(pathTo);
   // };
-  const [displayLocation, setDisplayLocation] = useState(location);
-  const [transitionStage, setTransistionStage] = useState('fadeIn');
+  const [transitionIn, setTransitionIn] = useState(true);
 
-  useEffect(() => {
-    if (location !== displayLocation) setTransistionStage('fadeOut');
-  }, [location]);
+  const onEnter = (node) => {
+    if (!node) return;
+    gsap.set(document.body, { overflow: 'hidden' });
+    gsap.set(node, { display: 'none' });
+    gsap.from([node.children], {
+      onStart: () => gsap.set(node, { display: '' }),
+      xPercent: 10,
+      delay: 1.5,
+      ease: 'power3.Out',
+      autoAlpha: 0,
+      stagger: {
+        amount: 0.6,
+      },
+      duration: 0.6,
+    });
+  };
 
+  const onExit = (node) => {
+    if (!node) return;
+    gsap.to([node.children], {
+      xPercent: -10,
+      ease: 'power3.In',
+      stagger: {
+        amount: 0.2,
+      },
+      duration: 0.6,
+      autoAlpha: 0,
+      onStart: () => setTransitionIn(false),
+      onComplete: () => {
+        setTransitionIn(true);
+        gsap.set(node, { display: 'none' });
+      },
+    });
+  };
   return (
     <div className="App">
       <NavBar handleChange={handleChange} />
-      <div
-        className={`${transitionStage}`}
-        onAnimationEnd={() => {
-          if (transitionStage === 'fadeOut') {
-            setTransistionStage('fadeIn');
-            setDisplayLocation(location);
-          }
-        }}
-      >
-        <Switch location={displayLocation}>
-          {routes.map((route) => (
-            <Route key={route.path} {...route} />
-          ))}
-          <Route path="*">
-            <Redirect to="/ExampleOne" />
-          </Route>
-        </Switch>
-      </div>
+      <TransitionGroup>
+        <Transition
+          in={transitionIn}
+          timeout={1200}
+          onExit={onExit}
+          onEnter={onEnter}
+          unmountOnExit
+          key={location.key}
+        >
+          <Switch location={location}>
+            {routes.map(({ path, component: Component }) => (
+              <Route key={path} exact path={path} component={Component} />
+            ))}
+
+            <Route path="*">
+              <Redirect to="/ExampleOne" />
+            </Route>
+          </Switch>
+        </Transition>
+      </TransitionGroup>
     </div>
   );
 };

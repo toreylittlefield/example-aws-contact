@@ -74,18 +74,34 @@ const App = () => {
   //   setviewIndex(index);
   //   history.push(pathTo);
   // };
+  const [displayLocation, setDisplayLocation] = useState(location);
+  const [transitionStage, setTransistionStage] = useState('fadeIn');
+
+  useEffect(() => {
+    if (location !== displayLocation) setTransistionStage('fadeOut');
+  }, [location]);
 
   return (
     <div className="App">
       <NavBar handleChange={handleChange} />
-      <Switch>
-        {routes.map((route) => (
-          <Route key={route.path} {...route} />
-        ))}
-        <Route path="*">
-          <Redirect to="/ExampleOne" />
-        </Route>
-      </Switch>
+      <div
+        className={`${transitionStage}`}
+        onAnimationEnd={() => {
+          if (transitionStage === 'fadeOut') {
+            setTransistionStage('fadeIn');
+            setDisplayLocation(location);
+          }
+        }}
+      >
+        <Switch location={displayLocation}>
+          {routes.map((route) => (
+            <Route key={route.path} {...route} />
+          ))}
+          <Route path="*">
+            <Redirect to="/ExampleOne" />
+          </Route>
+        </Switch>
+      </div>
     </div>
   );
 };

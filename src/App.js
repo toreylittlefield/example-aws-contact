@@ -1,8 +1,9 @@
 /* eslint-disable no-unused-vars */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import './App.css';
 import { Transition, TransitionGroup } from 'react-transition-group';
 import { gsap } from 'gsap';
+import { useMediaQuery, useTheme } from '@material-ui/core';
 
 import {
   Switch,
@@ -48,6 +49,9 @@ const App = () => {
   const history = useHistory();
   const location = useLocation();
   const [viewIndex, setviewIndex] = useState(null);
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.up('sm'));
+  const matchesMemo = useMemo(() => matches, [matches]);
 
   const initialState = () => {
     const pathOnLoad = history.location.pathname;
@@ -79,6 +83,8 @@ const App = () => {
   // };
   const [transitionIn, setTransitionIn] = useState(true);
 
+  const moveGsap = matchesMemo ? 'xPercent' : 'yPercent';
+
   const onEnter = (node) => {
     if (!node) return;
     gsap.set(document.body, { overflow: 'hidden' });
@@ -86,7 +92,7 @@ const App = () => {
     gsap.from([node.children], {
       onStart: () => gsap.set(node, { clearProps: 'display' }),
       onComplete: () => gsap.set(document.body, { clearProps: 'overflow' }),
-      xPercent: 10,
+      [moveGsap]: 10,
       delay: 1.5,
       ease: 'power3.Out',
       autoAlpha: 0,
@@ -101,7 +107,7 @@ const App = () => {
     if (!node) return;
     gsap.set(document.body, { overflow: 'hidden' });
     gsap.to([node.children], {
-      xPercent: -10,
+      [moveGsap]: -10,
       ease: 'power3.In',
       stagger: {
         amount: 0.2,

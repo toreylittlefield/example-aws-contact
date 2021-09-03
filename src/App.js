@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import './App.css';
-import SwipeableViews from 'react-swipeable-views';
 
 import {
   Switch,
@@ -69,27 +68,20 @@ const App = () => {
       event.target.getAttribute('dataindex');
     setviewIndex(parseInt(el) ?? viewIndex + 1);
   };
-  const handleChangeIndex = (index) => {
-    if (index >= routes.length) return;
-    const pathTo = routes[index].path;
-    setviewIndex(index);
-    history.push(pathTo);
-  };
+  // const handleChangeIndex = (index) => {
+  //   if (index >= routes.length) return;
+  //   const pathTo = routes[index].path;
+  //   setviewIndex(index);
+  //   history.push(pathTo);
+  // };
 
   return (
     <div className="App">
       <NavBar handleChange={handleChange} />
       <Switch>
-        <SwipeableViews
-          index={viewIndex}
-          onChangeIndex={handleChangeIndex}
-          enableMouseEvents
-          disableLazyLoading
-        >
-          {routes.map((route) => (
-            <Route key={route.path} {...route} />
-          ))}
-        </SwipeableViews>
+        {routes.map((route) => (
+          <Route key={route.path} {...route} />
+        ))}
         <Route path="*">
           <Redirect to="/ExampleOne" />
         </Route>

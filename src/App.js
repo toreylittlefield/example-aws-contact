@@ -93,7 +93,7 @@ const App = () => {
       onStart: () => gsap.set(node, { clearProps: 'display' }),
       onComplete: () => gsap.set(document.body, { clearProps: 'overflow' }),
       [moveGsap]: 10,
-      delay: 1.5,
+      delay: 0.85,
       ease: 'power3.Out',
       autoAlpha: 0,
       stagger: {

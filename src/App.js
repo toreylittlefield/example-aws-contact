@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import './App.css';
 import { Transition, TransitionGroup } from 'react-transition-group';
 import { gsap } from 'gsap';
@@ -45,13 +45,24 @@ const routes = [
   },
 ];
 
+/**
+ * @description exit occurs first in the transition
+ */
+const initGsapTiming = {
+  duration: 0.6,
+  stagger: 0.3,
+  totalTime: 0,
+};
+
 const App = () => {
   const history = useHistory();
   const location = useLocation();
   const [viewIndex, setviewIndex] = useState(null);
+  const [gsapTimingState, setGsapTimingState] = useState(initGsapTiming);
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up('sm'));
   const matchesMemo = useMemo(() => matches, [matches]);
+  const transitionRef = useRef(null);
 
   const initialState = () => {
     const pathOnLoad = history.location.pathname;
@@ -86,39 +97,56 @@ const App = () => {
   const moveGsap = matchesMemo ? 'xPercent' : 'yPercent';
 
   const onEnter = (node) => {
+    console.log('enter', gsapTimingState);
+    console.log({ refExit: transitionRef.current });
     if (!node) return;
     gsap.set(node, { display: 'none' });
-    gsap.from([node.children], {
+    const [firstChild, secondChild] = node.children;
+
+    gsap.from([firstChild.children, secondChild, secondChild.children], {
       onStart: () => gsap.set(node, { clearProps: 'display' }),
       onComplete: () => gsap.set(document.body, { clearProps: 'overflow' }),
-      [moveGsap]: 10,
-      delay: 0.85,
       ease: 'power3.Out',
+      delay: gsapTimingState.totalTime + 0.05,
       autoAlpha: 0,
+      [moveGsap]: 10,
       stagger: {
-        amount: 0.6,
+        amount: gsapTimingState.stagger,
       },
-      duration: 0.6,
+      duration: gsapTimingState.duration,
     });
   };
 
   const onExit = (node) => {
+    console.log({ refExit: transitionRef.current });
     if (!node) return;
+    const [firstChild, secondChild] = node.children;
     gsap.set(document.body, { overflow: 'hidden' });
-    gsap.to([node.children], {
-      [moveGsap]: -10,
-      ease: 'power3.In',
-      stagger: {
-        amount: 0.2,
-      },
-      duration: 0.6,
-      autoAlpha: 0,
-      onStart: () => setTransitionIn(false),
-      onComplete: () => {
-        setTransitionIn(true);
-        gsap.set(node, { display: 'none' });
-      },
-    });
+    const exitAnimation = gsap.to(
+      [firstChild.children, secondChild, secondChild.children],
+      {
+        onStart: () => setTransitionIn(false),
+        onComplete: () => {
+          setTransitionIn(true);
+          // gsap.set(node, { display: 'none' });
+        },
+        ease: 'power3.In',
+        duration: gsapTimingState.duration,
+        [moveGsap]: -30,
+        autoAlpha: 0,
+        stagger: {
+          amount: gsapTimingState.stagger,
+        },
+      }
+    );
+    // set the totalTime duration of the animation
+    if (gsapTimingState.totalTime === 0) {
+      setGsapTimingState((prev) => {
+        const copyState = prev;
+        copyState.totalTime = exitAnimation.duration();
+        return copyState;
+      });
+    }
   };
   return (
     <div className="App">
@@ -126,10 +154,11 @@ const App = () => {
       <TransitionGroup>
         <Transition
           in={transitionIn}
-          timeout={1200}
+          timeout={gsapTimingState.totalTime + 200}
           onExit={onExit}
-          onEnter={onEnter}
+          onEntering={onEnter}
           unmountOnExit
+          ref={transitionRef}
           key={location.key}
         >
           <Switch location={location}>

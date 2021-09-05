@@ -195,7 +195,6 @@ const App = () => {
           transformOrigin: 'left top',
           skewX: 0,
           scale: 1,
-          // clearProps: ['skewX'],
         })
         .to(curtain, {
           ease: 'expo.inOut',
@@ -207,8 +206,16 @@ const App = () => {
             amount: -0.2,
           },
         })
+        .to(
+          pageWrapper,
+          {
+            autoAlpha: 0,
+            duration: 0.5,
+          },
+          '>'
+        )
         .set([pageWrapper, curtain], { clearProps: 'all' });
-    tl.current.add(wrapperAnimation, '-=0.5');
+    tl.current.add(wrapperAnimation, '<0.3');
     // set the totalTime duration of the animation
     if (gsapTimingState.totalTime === 0) {
       setGsapTimingState((prev) => {

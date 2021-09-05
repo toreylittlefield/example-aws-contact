@@ -159,6 +159,7 @@ const App = () => {
     const curtain = '.curtain';
     gsap.set(document.body, { overflow: 'hidden' });
     console.log({ matchesMemo });
+    const skew = !matchesMemo ? 'skewY' : 'skewX';
     const elementsToAnimate = !matchesMemo
       ? [firstChild, secondChild.children]
       : [firstChild.children, secondChild, secondChild.children];
@@ -185,7 +186,7 @@ const App = () => {
         .to(curtain, {
           ease: 'expo.inOut',
           duration: 0.6,
-          scaleX: 3,
+          scaleX: 4,
           skewX: 60,
           stagger: {
             amount: 0.2,
@@ -194,7 +195,7 @@ const App = () => {
         .set(curtain, {
           transformOrigin: 'left top',
           skewX: 0,
-          scale: 1,
+          // scale: 1,
         })
         .to(curtain, {
           ease: 'expo.inOut',

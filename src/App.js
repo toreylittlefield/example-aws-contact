@@ -4,8 +4,13 @@ import './App.css';
 import { Transition } from 'react-transition-group';
 import { gsap } from 'gsap';
 import { useMediaQuery, useTheme } from '@material-ui/core';
-
 import { Route, Redirect, useHistory, useLocation } from 'react-router-dom';
+import {
+  enterAnimation,
+  exitAnimation,
+  wrapperAnimation,
+} from './Animations/pageTransitions';
+
 import { NavBar } from './Components';
 
 import {
@@ -118,97 +123,6 @@ const App = () => {
 
   const moveGsap = matchesMemo ? 'xPercent' : 'yPercent';
 
-  const exitAnimation = (elementsToAnimate, reversed) => {
-    const curTl = gsap.timeline().set(document.body, { overflow: 'hidden' });
-    if (reversed) {
-      curTl.from(elementsToAnimate, {
-        ease: 'power3.In',
-        duration: gsapTimingState.duration,
-        [moveGsap]: -10,
-        autoAlpha: 0,
-        stagger: {
-          amount: gsapTimingState.stagger,
-        },
-      });
-      return curTl;
-    }
-    curTl.to(elementsToAnimate, {
-      ease: 'power3.In',
-      duration: gsapTimingState.duration,
-      [moveGsap]: -100,
-      autoAlpha: 0,
-      stagger: {
-        amount: gsapTimingState.stagger,
-      },
-    });
-    return curTl;
-  };
-  const wrapperAnimation = (pageWrapper, curtain) =>
-    gsap
-      .timeline()
-      .set([pageWrapper, curtain], {
-        autoAlpha: 1,
-      })
-      .set(curtain, {
-        scaleX: 0,
-        skewX: 0,
-        transformOrigin: 'top right',
-      })
-      .to(curtain, {
-        ease: 'expo.inOut',
-        duration: 0.6,
-        scaleX: 4,
-        skewX: 60,
-        stagger: {
-          amount: 0.2,
-        },
-      })
-      .set(curtain, {
-        transformOrigin: 'left top',
-        skewX: 0,
-        // scale: 1,
-      })
-      .to(curtain, {
-        ease: 'expo.inOut',
-        duration: 0.6,
-        scaleX: 0,
-        skewY: 60,
-
-        stagger: {
-          amount: -0.2,
-        },
-      })
-      .to(
-        pageWrapper,
-        {
-          autoAlpha: 0,
-          duration: 0.3,
-        },
-        '>'
-      )
-      .set([pageWrapper, curtain], { clearProps: 'all' });
-
-  const enterAnimation = (node, firstChild, secondChild) =>
-    gsap
-      .timeline()
-      .set(document.body, { overflow: 'hidden' })
-      .set(node, { display: 'none' })
-      .from([firstChild.children, secondChild, secondChild.children], {
-        onStart: () => gsap.set(node, { clearProps: 'display' }),
-        onComplete: () => {
-          gsap.set(document.body, { clearProps: 'overflow' });
-          tl.current.clear();
-        },
-        ease: 'power3.Out',
-        // delay: gsapTimingState.totalTime + 0.05,
-        autoAlpha: 0,
-        [moveGsap]: 10,
-        stagger: {
-          amount: gsapTimingState.stagger,
-        },
-        duration: gsapTimingState.duration,
-      });
-
   const onEnter = (node) => {
     console.log('enter', gsapTimingState);
     // console.log({ refEnter: exitRef.current });
@@ -220,11 +134,18 @@ const App = () => {
 
     if (reverseAnimation) {
       tl.current
-        .add(exitAnimation(elementsToAnimate, true))
+        .add(exitAnimation(elementsToAnimate, gsapTimingState, moveGsap, true))
         .addLabel('enter', '<');
     } else {
       tl.current.add(
-        enterAnimation(node, firstChild, secondChild).addLabel('enter', '<')
+        enterAnimation(
+          node,
+          firstChild,
+          secondChild,
+          tl,
+          moveGsap,
+          gsapTimingState
+        ).addLabel('enter', '<')
       );
     }
     setReverseAnimation((prev) => !prev);
@@ -244,13 +165,24 @@ const App = () => {
     if (reverseAnimation) {
       gsap.set(node, { display: 'none' });
       tl.current
-        .add(enterAnimation(node, firstChild, secondChild).reverse())
+        .add(
+          enterAnimation(
+            node,
+            firstChild,
+            secondChild,
+            tl,
+            moveGsap,
+            gsapTimingState
+          ).reverse()
+        )
         .addLabel('exit', '<');
       tl.current
         .add(wrapperAnimation(pageWrapper, curtain).reverse())
         .addLabel('wrapper', '<');
     } else {
-      tl.current.add(exitAnimation(elementsToAnimate)).addLabel('exit', '<');
+      tl.current
+        .add(exitAnimation(elementsToAnimate, gsapTimingState, moveGsap))
+        .addLabel('exit', '<');
       tl.current
         .add(wrapperAnimation(pageWrapper, curtain), '<0.3')
         .addLabel('wrapper', '<');

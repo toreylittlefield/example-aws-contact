@@ -1,17 +1,11 @@
 /* eslint-disable no-unused-vars */
 import { useState, useEffect, useMemo, useRef } from 'react';
 import './App.css';
-import { Transition, TransitionGroup } from 'react-transition-group';
+import { Transition } from 'react-transition-group';
 import { gsap } from 'gsap';
 import { useMediaQuery, useTheme } from '@material-ui/core';
 
-import {
-  Switch,
-  Route,
-  Redirect,
-  useHistory,
-  useLocation,
-} from 'react-router-dom';
+import { Route, Redirect, useHistory, useLocation } from 'react-router-dom';
 import { NavBar } from './Components';
 
 import {
@@ -161,6 +155,8 @@ const App = () => {
     // tline.autoRemoveChildren();
 
     const [firstChild, secondChild] = node.children;
+    const pageWrapper = '.page-wrapper';
+    const curtain = '.curtain';
     gsap.set(document.body, { overflow: 'hidden' });
     console.log({ matchesMemo });
     const elementsToAnimate = !matchesMemo
@@ -175,6 +171,44 @@ const App = () => {
         amount: gsapTimingState.stagger,
       },
     });
+    const wrapperAnimation = () =>
+      gsap
+        .timeline()
+        .set([pageWrapper, curtain], {
+          autoAlpha: 1,
+        })
+        .set(curtain, {
+          scaleX: 0,
+          skewX: 0,
+          transformOrigin: 'top right',
+        })
+        .to(curtain, {
+          ease: 'expo.inOut',
+          duration: 0.6,
+          scaleX: 3,
+          skewX: 60,
+          stagger: {
+            amount: 0.2,
+          },
+        })
+        .set(curtain, {
+          transformOrigin: 'left top',
+          skewX: 0,
+          scale: 1,
+          // clearProps: ['skewX'],
+        })
+        .to(curtain, {
+          ease: 'expo.inOut',
+          duration: 0.6,
+          scaleX: 0,
+          skewY: 60,
+
+          stagger: {
+            amount: -0.2,
+          },
+        })
+        .set([pageWrapper, curtain], { clearProps: 'all' });
+    tl.current.add(wrapperAnimation, '-=0.5');
     // set the totalTime duration of the animation
     if (gsapTimingState.totalTime === 0) {
       setGsapTimingState((prev) => {
@@ -188,42 +222,27 @@ const App = () => {
   return (
     <div className="App">
       <NavBar handleChange={handleChange} />
-      {/* <TransitionGroup> */}
-      {/* 
-      <Transition
-          in={transitionIn}
-          timeout={gsapTimingState.totalTime + 0.02}
-          onExit={onExit}
-          onEntering={onEnter}
-          unmountOnExit
-          ref={exitRef}
-          key={location.key}
-        >
-          <Switch location={location}> */}
+      <div className="page-wrapper">
+        <div className="curtain" />
+        <div className="curtain" />
+        <div className="curtain" />
+      </div>
       {routes.map(({ path, component: Component, key, exact }) => (
         <Route key={key} path={path} exact>
-          {
-            ({ match }) => (
-              // match !== null ? (
-              <Transition
-                in={match !== null}
-                timeout={gsapTimingState.totalTime * 950 ?? 0}
-                onExit={onExit}
-                onEntering={onEnter}
-                unmountOnExit
-                ref={exitRef}
-                // key={location.key
-              >
-                <Component to={path === '*' ? '/ExampleOne' : null} />
-              </Transition>
-            )
-            // ) : null
-          }
+          {({ match }) => (
+            <Transition
+              in={match !== null}
+              timeout={gsapTimingState.totalTime * 950 ?? 0}
+              onExit={onExit}
+              onEntering={onEnter}
+              unmountOnExit
+              ref={exitRef}
+            >
+              <Component to={path === '*' ? '/ExampleOne' : null} />
+            </Transition>
+          )}
         </Route>
       ))}
-      {/* </Switch>
-        </Transition>
-      </TransitionGroup> */}
     </div>
   );
 };

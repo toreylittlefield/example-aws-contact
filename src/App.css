@@ -27,3 +27,32 @@ section {
 pre {
   height: 400px;
 }
+
+.page-wrapper {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  visibility: hidden;
+  opacity: 0;
+  z-index: 1;
+  /* background-color: hsla(8, 20%, 20%, 1); */
+}
+
+.page-wrapper .curtain {
+  position: absolute;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  background-color: hsla(8, 58%, 70%, 0.8);
+}
+
+.page-wrapper .curtain:nth-of-type(2) {
+  background-color: hsla(6, 48%, 40%, 0.8);
+}
+
+.page-wrapper .curtain:nth-of-type(3) {
+  background-color: hsla(6, 38%, 30%, 0.8);
+}

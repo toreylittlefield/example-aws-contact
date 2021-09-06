@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState, useEffect, useMemo, useRef } from 'react';
 import './App.css';
 import { Transition } from 'react-transition-group';
@@ -78,11 +77,8 @@ const App = () => {
   const matches = useMediaQuery(theme.breakpoints.up('sm'));
   const matchesMemo = useMemo(() => matches, [matches]);
   const exitRef = useRef(null);
-  const tl = useRef(null);
-
-  useEffect(() => {
-    tl.current = gsap.timeline({ defaults: { paused: true, yoyo: true } });
-  }, []);
+  // const tl = useRef(null);
+  // const [tl, setTl] = useState(null);
 
   const initialState = () => {
     const pathOnLoad = history.location.pathname;
@@ -120,39 +116,120 @@ const App = () => {
   //   history.push(pathTo);
   // };
   const [reverseAnimation, setReverseAnimation] = useState(false);
+  const [prevElements, setPrevElements] = useState({
+    exitEl: null,
+    enterEl: null,
+    wrapper: null,
+  });
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const moveGsap = matchesMemo ? 'xPercent' : 'yPercent';
 
+  // exit animation
+  useEffect(() => {
+    if (isAnimating === false) return;
+    const tl = gsap.timeline({
+      autoRemoveChildren: true,
+      defaults: { overwrite: 'auto' },
+    });
+    const wrapper = async () => {
+      const runExitAni = () => {
+        if (prevElements.exitEl === null) return;
+        const { elementsToAnimate, node, firstChild, secondChild } =
+          prevElements.exitEl;
+        const [pageWrapper, curtain] = prevElements.wrapper;
+        if (reverseAnimation) {
+          gsap.set(node, { display: 'none' });
+          tl.add(
+            enterAnimation(
+              node,
+              firstChild,
+              secondChild,
+              tl,
+              moveGsap,
+              gsapTimingState
+            ).reverse()
+          ).addLabel('exit', '<');
+          tl.add(wrapperAnimation(pageWrapper, curtain).reverse()).addLabel(
+            'wrapper',
+            '<'
+          );
+        } else {
+          tl.add(
+            exitAnimation(elementsToAnimate, gsapTimingState, moveGsap)
+          ).addLabel('exit', '<');
+          tl.add(wrapperAnimation(pageWrapper, curtain), '<0.3').addLabel(
+            'wrapper',
+            '<'
+          );
+        }
+        // set the totalTime duration of the animation
+        if (gsapTimingState.totalTime === 0) {
+          setGsapTimingState((prev) => {
+            const copyState = prev;
+            copyState.totalTime = tl.duration();
+            return copyState;
+          });
+        }
+      };
+      const runEnterAni = () => {
+        if (prevElements.enterEl === null) return;
+        const { elementsToAnimate, firstChild, secondChild, node } =
+          prevElements.enterEl;
+        if (reverseAnimation) {
+          tl.add(
+            exitAnimation(
+              elementsToAnimate,
+              gsapTimingState,
+              moveGsap,
+              true,
+              node
+            ).addLabel('enter', '<')
+          ).then(() => setIsAnimating(false));
+        } else {
+          tl.add(
+            enterAnimation(
+              node,
+              firstChild,
+              secondChild,
+              tl,
+              moveGsap,
+              gsapTimingState
+            ).addLabel('enter', '<')
+          ).then(() => setIsAnimating(false));
+        }
+      };
+      await runExitAni();
+      runEnterAni();
+    };
+    wrapper();
+
+    return () => {
+      if (tl) {
+        wrapper();
+      }
+    };
+  }, [isAnimating]);
+
   const onEnter = (node) => {
-    console.log('enter', gsapTimingState);
-    // console.log({ refEnter: exitRef.current });
     if (!node) return;
+    gsap.set(node, { display: 'none' });
+
     const [firstChild, secondChild] = node.children;
     const elementsToAnimate = !matchesMemo
       ? [firstChild, secondChild.children]
       : [firstChild.children, secondChild, secondChild.children];
+    setPrevElements((prev) => {
+      const copy = prev;
+      copy.enterEl = { elementsToAnimate, firstChild, secondChild, node };
+      return copy;
+    });
 
-    if (reverseAnimation) {
-      tl.current
-        .add(exitAnimation(elementsToAnimate, gsapTimingState, moveGsap, true))
-        .addLabel('enter', '<');
-    } else {
-      tl.current.add(
-        enterAnimation(
-          node,
-          firstChild,
-          secondChild,
-          tl,
-          moveGsap,
-          gsapTimingState
-        ).addLabel('enter', '<')
-      );
-    }
     setReverseAnimation((prev) => !prev);
+    setIsAnimating(true);
   };
 
   const onExit = (node) => {
-    // console.log({ refExit: exitRef.current, tl });
     if (!node) return;
 
     const [firstChild, secondChild] = node.children;
@@ -161,42 +238,12 @@ const App = () => {
     const elementsToAnimate = !matchesMemo
       ? [firstChild, secondChild.children]
       : [firstChild.children, secondChild, secondChild.children];
-
-    if (reverseAnimation) {
-      gsap.set(node, { display: 'none' });
-      tl.current
-        .add(
-          enterAnimation(
-            node,
-            firstChild,
-            secondChild,
-            tl,
-            moveGsap,
-            gsapTimingState
-          ).reverse()
-        )
-        .addLabel('exit', '<');
-      tl.current
-        .add(wrapperAnimation(pageWrapper, curtain).reverse())
-        .addLabel('wrapper', '<');
-    } else {
-      tl.current
-        .add(exitAnimation(elementsToAnimate, gsapTimingState, moveGsap))
-        .addLabel('exit', '<');
-      tl.current
-        .add(wrapperAnimation(pageWrapper, curtain), '<0.3')
-        .addLabel('wrapper', '<');
-    }
-    console.log({ iteration: tl.current.iteration() });
-
-    // set the totalTime duration of the animation
-    if (gsapTimingState.totalTime === 0) {
-      setGsapTimingState((prev) => {
-        const copyState = prev;
-        copyState.totalTime = tl.current.duration();
-        return copyState;
-      });
-    }
+    setPrevElements((prev) => {
+      const copy = prev;
+      copy.exitEl = { elementsToAnimate, node, firstChild, secondChild };
+      copy.wrapper = [pageWrapper, curtain];
+      return copy;
+    });
   };
 
   return (
@@ -207,14 +254,14 @@ const App = () => {
         <div className="curtain" />
         <div className="curtain" />
       </div>
-      {routes.map(({ path, component: Component, key, exact }) => (
+      {routes.map(({ path, component: Component, key }) => (
         <Route key={key} path={path} exact>
           {({ match }) => (
             <Transition
               in={match !== null}
-              timeout={gsapTimingState.totalTime * 950 ?? 0}
+              timeout={gsapTimingState.totalTime * 250 ?? 4300}
               onExit={onExit}
-              onEntering={onEnter}
+              onEnter={onEnter}
               unmountOnExit
               ref={exitRef}
             >

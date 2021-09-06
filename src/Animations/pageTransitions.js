@@ -77,6 +77,7 @@ const animateIntroText = () => {
 export const onStartWrapper = (pageWrapper, curtain) =>
   gsap
     .timeline()
+    .set(document.body, { overflow: 'hidden' })
     .set([pageWrapper, curtain], {
       autoAlpha: 1,
       zIndex: 99999,
@@ -132,7 +133,9 @@ export const onStartWrapper = (pageWrapper, curtain) =>
       },
       '<55%'
     )
-    .set([pageWrapper, curtain, 'section'], { clearProps: 'all' });
+    .set([document.body, pageWrapper, curtain, 'section'], {
+      clearProps: 'all',
+    });
 
 export const wrapperAnimation = (pageWrapper, curtain) =>
   gsap

@@ -56,3 +56,24 @@ pre {
 .page-wrapper .curtain:nth-of-type(3) {
   background-color: hsla(46, 99%, 38%, 0.8);
 }
+
+#intro-text {
+  font-size: 16rem;
+  text-align: center;
+  font-family: 'Indie Flower', cursive;
+  /* opacity: 0;
+  visibility: 0;
+  display: none; */
+  display: grid;
+  place-content: center;
+  grid-auto-flow: column;
+  grid-template-columns: auto;
+  color: white;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  height: 100%;
+  width: 100%;
+  transform: translate(-50%, -50%);
+  z-index: 9999999;
+}

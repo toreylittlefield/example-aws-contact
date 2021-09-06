@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import './App.css';
 import { Transition } from 'react-transition-group';
 import { gsap } from 'gsap';
@@ -76,9 +76,6 @@ const App = () => {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up('sm'));
   const matchesMemo = useMemo(() => matches, [matches]);
-  const exitRef = useRef(null);
-  // const tl = useRef(null);
-  // const [tl, setTl] = useState(null);
 
   const initialState = () => {
     const pathOnLoad = history.location.pathname;
@@ -263,7 +260,6 @@ const App = () => {
               onExit={onExit}
               onEnter={onEnter}
               unmountOnExit
-              ref={exitRef}
             >
               <Component to={path === '*' ? '/ExampleOne' : null} />
             </Transition>

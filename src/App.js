@@ -247,6 +247,7 @@ const App = () => {
 
   return (
     <div className="App">
+      <div id="intro-text"> </div>
       <NavBar handleChange={handleChange} />
       <div className="page-wrapper">
         <div className="curtain" />

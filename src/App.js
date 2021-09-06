@@ -8,6 +8,7 @@ import {
   enterAnimation,
   exitAnimation,
   wrapperAnimation,
+  onStartWrapper,
 } from './Animations/pageTransitions';
 
 import { NavBar } from './Components';
@@ -85,6 +86,7 @@ const App = () => {
 
   useEffect(() => {
     setviewIndex(initialState);
+    onStartWrapper('.page-wrapper', '.curtain');
   }, []);
 
   useEffect(() => {

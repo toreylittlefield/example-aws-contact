@@ -33,6 +33,46 @@ export const exitAnimation = (
   });
   return curTl;
 };
+
+export const onStartWrapper = (pageWrapper, curtain) =>
+  gsap
+    .timeline()
+    .set([pageWrapper, curtain], {
+      autoAlpha: 1,
+      zIndex: 99999,
+      scaleY: 2,
+    })
+    .set(pageWrapper, { backgroundColor: 'black' })
+    .set(curtain, {
+      scaleY: 0.1,
+      skewY: 0,
+      transformOrigin: 'center bottom',
+    })
+    .to(curtain, {
+      ease: 'expo.inOut',
+      duration: 3,
+      scaleY: 1.5,
+      yPercent: -200,
+      skewY: 15,
+      backgroundColor: 'white',
+      stagger: {
+        amount: 0.15,
+      },
+    })
+    .to(
+      pageWrapper,
+      {
+        // backgroundColor: 'black',
+        yPercent: -200,
+        autoAlpha: 1,
+        duration: 0.3,
+        skewY: 10,
+        ease: 'none',
+      },
+      '<50%'
+    )
+    .set([pageWrapper, curtain], { clearProps: 'all' });
+
 export const wrapperAnimation = (pageWrapper, curtain) =>
   gsap
     .timeline()

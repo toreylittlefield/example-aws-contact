@@ -34,6 +34,46 @@ export const exitAnimation = (
   return curTl;
 };
 
+const animateIntroText = () => {
+  const introTextElement = document.getElementById('intro-text');
+  const introText = 'Welcome!';
+  [...introText].forEach((letter) => {
+    const div = document.createElement('div');
+    introTextElement.appendChild(div);
+    // span.style.cssText = `display: none; opacity: 0; visibility: 0`;
+    div.innerText = letter;
+  });
+  const tl = gsap
+    .timeline()
+    .from([introTextElement.children], {
+      duration: 1,
+      ease: 'back',
+      autoAlpha: 0,
+      // display: 'none',
+      skewX: -15,
+      y: -100,
+      stagger: {
+        each: 0.2,
+      },
+    })
+    .to(
+      [introTextElement.children],
+      {
+        duration: 0.7,
+        ease: 'power3.in',
+        onComplete: () => gsap.set(introTextElement, { display: 'none' }),
+        autoAlpha: 0,
+        y: -10,
+        skewX: 15,
+        stagger: {
+          each: -0.1,
+        },
+      },
+      '<95%'
+    );
+  return tl;
+};
+
 export const onStartWrapper = (pageWrapper, curtain) =>
   gsap
     .timeline()
@@ -62,16 +102,37 @@ export const onStartWrapper = (pageWrapper, curtain) =>
     .to(
       pageWrapper,
       {
-        // backgroundColor: 'black',
         yPercent: -200,
         autoAlpha: 1,
         duration: 0.3,
         skewY: 10,
+        scaleY: 10,
         ease: 'none',
       },
       '<50%'
     )
-    .set([pageWrapper, curtain], { clearProps: 'all' });
+    .add(animateIntroText(), '<50%')
+    .set(pageWrapper, { transformOrigin: 'top top' })
+    .to(
+      pageWrapper,
+      {
+        scaleY: 0,
+        duration: 2.5,
+        onComplete: () => gsap.set(pageWrapper, { autoAlpha: 0 }),
+      },
+      '<95%'
+    )
+    .from(
+      'section',
+      {
+        scale: 1.2,
+        duration: 1,
+        stagger: { amount: 0.15 },
+        ease: 'back',
+      },
+      '<55%'
+    )
+    .set([pageWrapper, curtain, 'section'], { clearProps: 'all' });
 
 export const wrapperAnimation = (pageWrapper, curtain) =>
   gsap

@@ -118,13 +118,12 @@ const App = () => {
     enterEl: null,
     wrapper: null,
   });
-  const [isAnimating, setIsAnimating] = useState(false);
 
   const moveGsap = matchesMemo ? 'xPercent' : 'yPercent';
 
-  // exit animation
+  // page transitions handled here animation
   useEffect(() => {
-    if (isAnimating === false) return;
+    // if (prevElements.enterEl === null || prevElements.) return;
     const tl = gsap.timeline({
       autoRemoveChildren: true,
       defaults: { overwrite: 'auto' },
@@ -182,7 +181,7 @@ const App = () => {
               true,
               node
             ).addLabel('enter', '<')
-          ).then(() => setIsAnimating(false));
+          );
         } else {
           tl.add(
             enterAnimation(
@@ -193,7 +192,7 @@ const App = () => {
               moveGsap,
               gsapTimingState
             ).addLabel('enter', '<')
-          ).then(() => setIsAnimating(false));
+          );
         }
       };
       await runExitAni();
@@ -203,32 +202,14 @@ const App = () => {
 
     return () => {
       if (tl) {
-        wrapper();
+        tl.reversed(true).then(() => tl.kill());
       }
     };
-  }, [isAnimating]);
+  }, [reverseAnimation]);
 
-  const onEnter = (node) => {
-    if (!node) return;
-    gsap.set(node, { display: 'none' });
-
-    const [firstChild, secondChild] = node.children;
-    const elementsToAnimate = !matchesMemo
-      ? [firstChild, secondChild.children]
-      : [firstChild.children, secondChild, secondChild.children];
-    setPrevElements((prev) => {
-      const copy = prev;
-      copy.enterEl = { elementsToAnimate, firstChild, secondChild, node };
-      return copy;
-    });
-
-    setReverseAnimation((prev) => !prev);
-    setIsAnimating(true);
-  };
-
+  // exiting element
   const onExit = (node) => {
     if (!node) return;
-
     const [firstChild, secondChild] = node.children;
     const pageWrapper = '.page-wrapper';
     const curtain = '.curtain';
@@ -241,6 +222,22 @@ const App = () => {
       copy.wrapper = [pageWrapper, curtain];
       return copy;
     });
+  };
+
+  // entering element (called after exited element)
+  const onEnter = (node) => {
+    if (!node) return;
+    gsap.set(node, { display: 'none' });
+    const [firstChild, secondChild] = node.children;
+    const elementsToAnimate = !matchesMemo
+      ? [firstChild, secondChild.children]
+      : [firstChild.children, secondChild, secondChild.children];
+    setPrevElements((prev) => {
+      const copy = prev;
+      copy.enterEl = { elementsToAnimate, firstChild, secondChild, node };
+      return copy;
+    });
+    setReverseAnimation((prev) => !prev);
   };
 
   return (

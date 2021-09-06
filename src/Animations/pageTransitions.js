@@ -51,7 +51,7 @@ export const onStartWrapper = (pageWrapper, curtain) =>
     .to(curtain, {
       ease: 'expo.inOut',
       duration: 3,
-      scaleY: 1.5,
+      scaleY: 10,
       yPercent: -200,
       skewY: 15,
       backgroundColor: 'white',

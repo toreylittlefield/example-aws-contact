@@ -123,7 +123,8 @@ const App = () => {
 
   // page transitions handled here animation
   useEffect(() => {
-    // if (prevElements.enterEl === null || prevElements.) return;
+    if (prevElements.enterEl === null) return;
+
     const tl = gsap.timeline({
       autoRemoveChildren: true,
       defaults: { overwrite: 'auto' },
@@ -202,6 +203,8 @@ const App = () => {
 
     return () => {
       if (tl) {
+        if (prevElements.exitEl === null) return;
+
         tl.reversed(true).then(() => tl.kill());
       }
     };

@@ -4,9 +4,12 @@ export const exitAnimation = (
   elementsToAnimate,
   gsapTimingState,
   moveGsap,
-  reversed
+  reversed,
+  node
 ) => {
   const curTl = gsap.timeline().set(document.body, { overflow: 'hidden' });
+  if (node && gsap.getProperty(node, 'display') === 'none')
+    gsap.set(node, { clearProps: 'display' });
   if (reversed) {
     curTl.from(elementsToAnimate, {
       ease: 'power3.In',
@@ -53,7 +56,6 @@ export const wrapperAnimation = (pageWrapper, curtain) =>
     .set(curtain, {
       transformOrigin: 'left top',
       skewX: 0,
-      // scale: 1,
     })
     .to(curtain, {
       ease: 'expo.inOut',
@@ -91,7 +93,15 @@ export const enterAnimation = (
       onStart: () => gsap.set(node, { clearProps: 'display' }),
       onComplete: () => {
         gsap.set(document.body, { clearProps: 'overflow' });
-        tl.current.clear();
+        tl.clear();
+        console.log({ active: tl.isActive() });
+      },
+      onInterrupt: () => {
+        console.log('interrupt enter');
+        tl.set([node, firstChild.children, secondChild, secondChild.children], {
+          clearProps: 'all',
+        });
+        tl.clear();
       },
       ease: 'power3.Out',
       // delay: gsapTimingState.totalTime + 0.05,

@@ -75,6 +75,6 @@ pre {
   left: 50%;
   height: 100%;
   width: 100%;
-  transform: translate(-50%, -70%);
+  transform: translate(-50%, -60%);
   z-index: 9999999;
 }

@@ -58,7 +58,8 @@ pre {
 }
 
 #intro-text {
-  font-size: 16rem;
+  /* font-size: 16rem; */
+  font-size: 20vw;
   text-align: center;
   font-family: 'Indie Flower', cursive;
   /* opacity: 0;
@@ -74,6 +75,6 @@ pre {
   left: 50%;
   height: 100%;
   width: 100%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -70%);
   z-index: 9999999;
 }

@@ -122,7 +122,6 @@ const App = () => {
   };
 
   const handleSkipIntro = () => {
-    console.count('btn clicked');
     setIsIntroAniRunning(false);
     introTimeline.current.totalProgress(0.9);
   };

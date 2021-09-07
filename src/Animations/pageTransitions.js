@@ -56,7 +56,6 @@ const animateIntroText = (
       containerDiv.appendChild(div);
       let copyLetter = letter;
       if (copyLetter === ' ') {
-        console.log(copyLetter);
         copyLetter = '-';
         div.style.opacity = 0;
       }
@@ -296,10 +295,8 @@ export const enterAnimation = (
       onComplete: () => {
         gsap.set(document.body, { clearProps: 'overflow' });
         tl.clear();
-        console.log({ active: tl.isActive() });
       },
       onInterrupt: () => {
-        console.log('interrupt enter');
         tl.set([node, firstChild.children, secondChild, secondChild.children], {
           clearProps: 'all',
         });

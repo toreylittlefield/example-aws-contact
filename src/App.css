@@ -95,3 +95,8 @@ code span {
   left: 30px;
   z-index: 999999999;
 }
+
+#swiper {
+  touch-action: none;
+  user-select: none;
+}

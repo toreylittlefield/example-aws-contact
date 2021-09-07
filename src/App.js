@@ -1,8 +1,8 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import './App.css';
 import { Transition } from 'react-transition-group';
 import { gsap } from 'gsap';
-import { useMediaQuery, useTheme } from '@material-ui/core';
+import { Button, useMediaQuery, useTheme } from '@material-ui/core';
 import { Route, Redirect, useHistory, useLocation } from 'react-router-dom';
 import {
   enterAnimation,
@@ -77,6 +77,7 @@ const App = () => {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up('sm'));
   const matchesMemo = useMemo(() => matches, [matches]);
+  const introTimeline = useRef(null);
 
   const initialState = () => {
     const pathOnLoad = history.location.pathname;
@@ -84,10 +85,28 @@ const App = () => {
     return initIndex === -1 ? 0 : initIndex;
   };
 
+  const [isIntroAniRunning, setIsIntroAniRunning] = useState(null);
+
   useEffect(() => {
-    setviewIndex(initialState);
-    onStartWrapper('.page-wrapper', '.curtain');
-  }, []);
+    console.count('useeffect');
+    if (viewIndex === null) setviewIndex(initialState);
+    if (isIntroAniRunning === false || isIntroAniRunning) return;
+    setIsIntroAniRunning(true);
+    introTimeline.current = gsap.globalTimeline;
+    introTimeline.current.add(
+      'start',
+      onStartWrapper('.page-wrapper', '.curtain')
+    );
+    // introTimeline.current.play().totalProgress(0.9);
+    return () => {
+      console.count('killing intro');
+      if (isIntroAniRunning === false) {
+        console.count('reverse intro');
+        introTimeline.current.reversed(true);
+      }
+      // .totalProgress(0.99);
+    };
+  }, [isIntroAniRunning]);
 
   useEffect(() => {
     if (history.action === 'POP') {
@@ -108,6 +127,13 @@ const App = () => {
       event.target.getAttribute('dataindex');
     setviewIndex(parseInt(el) ?? viewIndex + 1);
   };
+
+  const handleSkipIntro = () => {
+    console.count('btn clicked');
+    setIsIntroAniRunning(false);
+    introTimeline.current.totalProgress(0.9);
+  };
+
   // const handleChangeIndex = (index) => {
   //   if (index >= routes.length) return;
   //   const pathTo = routes[index].path;
@@ -248,6 +274,16 @@ const App = () => {
   return (
     <div className="App">
       <div id="intro-text"> </div>
+      {isIntroAniRunning && (
+        <Button
+          onClick={handleSkipIntro}
+          variant="outlined"
+          color="primary"
+          id="btn-skip-intro"
+        >
+          Skip Intro
+        </Button>
+      )}
       <NavBar handleChange={handleChange} />
       <div className="page-wrapper">
         <div className="curtain" />

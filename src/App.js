@@ -95,7 +95,9 @@ const App = () => {
     introTimeline.current = gsap.globalTimeline;
     introTimeline.current.add(
       'start',
-      onStartWrapper('.page-wrapper', '.curtain')
+      onStartWrapper('.page-wrapper', '.curtain').then(() =>
+        setIsIntroAniRunning(false)
+      )
     );
     // introTimeline.current.play().totalProgress(0.9);
     return () => {

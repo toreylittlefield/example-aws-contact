@@ -78,6 +78,7 @@ const App = () => {
   const matches = useMediaQuery(theme.breakpoints.up('sm'));
   const matchesMemo = useMemo(() => matches, [matches]);
   const introTimeline = useRef(null);
+  const swiperRef = useRef(null);
 
   const initialState = () => {
     const pathOnLoad = history.location.pathname;
@@ -263,6 +264,68 @@ const App = () => {
     setReverseAnimation((prev) => !prev);
   };
 
+  const [isMoving, setIsMoving] = useState(false);
+
+  useEffect(() => {
+    console.count('moving');
+    const parentContainer = swiperRef.current;
+    let totalXMovement = 0;
+    let allowMove = true;
+    const handlePointerMove = (event) => {
+      if (allowMove === false) return;
+      const currentPath = location.pathname;
+      const index = routes.findIndex((route) => route.path === currentPath);
+      totalXMovement += event.movementX;
+      let currentMoveAmount = event.movementX;
+      if (totalXMovement > 300) currentMoveAmount = 0;
+      if (totalXMovement < -300) currentMoveAmount = 0;
+      if (index === 0 && totalXMovement < 0) {
+        totalXMovement = 0;
+        return;
+      }
+      if (index === routes.length - 1 && totalXMovement > 0) {
+        totalXMovement = 0;
+        return;
+      }
+      const tl = gsap;
+      tl.to(swiperRef.current, {
+        duration: 0.01,
+        x: `+=${Math.round(currentMoveAmount)}`,
+        skewX: `+=${Math.round(currentMoveAmount / 50)}`,
+      });
+      if (Math.abs(totalXMovement) > 200) {
+        if (totalXMovement > 0) history.push(routes[index + 1].path);
+        if (totalXMovement < 0) history.push(routes[index - 1].path);
+        // eslint-disable-next-line no-use-before-define
+        handlePointerUp();
+        allowMove = false;
+      }
+    };
+    const handlePointerUp = () => {
+      gsap.set(swiperRef.current, { clearProps: 'all' });
+
+      parentContainer.removeEventListener('pointermove', handlePointerMove);
+    };
+
+    parentContainer.addEventListener('pointermove', handlePointerMove);
+    parentContainer.addEventListener('pointerup', handlePointerUp, {
+      once: true,
+    });
+    return () => {
+      console.count('resting swiper');
+      gsap.set(swiperRef.current, { clearProps: 'all' });
+    };
+  }, [isMoving]);
+
+  /**
+   *
+   * @param {PointerEvent} event
+   */
+  const handlePointerDown = () => {
+    console.log('handle pointer down');
+    setIsMoving((prev) => !prev);
+  };
+
   return (
     <div className="App">
       <div id="intro-text"> </div>
@@ -282,21 +345,23 @@ const App = () => {
         <div className="curtain" />
         <div className="curtain" />
       </div>
-      {routes.map(({ path, component: Component, key }) => (
-        <Route key={key} path={path} exact>
-          {({ match }) => (
-            <Transition
-              in={match !== null}
-              timeout={gsapTimingState.totalTime * 250 ?? 4300}
-              onExit={onExit}
-              onEnter={onEnter}
-              unmountOnExit
-            >
-              <Component to={path === '*' ? '/ExampleOne' : null} />
-            </Transition>
-          )}
-        </Route>
-      ))}
+      <div id="swiper" ref={swiperRef} onPointerDown={handlePointerDown}>
+        {routes.map(({ path, component: Component, key }) => (
+          <Route key={key} path={path} exact>
+            {({ match }) => (
+              <Transition
+                in={match !== null}
+                timeout={gsapTimingState.totalTime * 250 ?? 4300}
+                onExit={onExit}
+                onEnter={onEnter}
+                unmountOnExit
+              >
+                <Component to={path === '*' ? '/ExampleOne' : null} />
+              </Transition>
+            )}
+          </Route>
+        ))}
+      </div>
     </div>
   );
 };

@@ -222,9 +222,18 @@ export const onStartWrapper = (pageWrapper, curtain) =>
       },
       '<55%'
     )
+    .from(
+      ['header', '.page-wrapper', 'section'],
+      {
+        autoAlpha: 0,
+        duration: 0.4,
+      },
+      '<50%'
+    )
     .set([document.body, pageWrapper, curtain, 'section'], {
       clearProps: 'all',
-    });
+    })
+    .then(() => document.getElementById('intro-text').remove());
 
 export const wrapperAnimation = (pageWrapper, curtain) =>
   gsap

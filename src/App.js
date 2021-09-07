@@ -99,16 +99,7 @@ const App = () => {
         setIsIntroAniRunning(false)
       )
     );
-    // introTimeline.current.play().totalProgress(0.9);
-    return () => {
-      console.count('killing intro');
-      if (isIntroAniRunning === false) {
-        console.count('reverse intro');
-        introTimeline.current.reversed(true);
-      }
-      // .totalProgress(0.99);
-    };
-  }, [isIntroAniRunning]);
+  }, []);
 
   useEffect(() => {
     if (history.action === 'POP') {

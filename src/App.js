@@ -267,10 +267,10 @@ const App = () => {
   const [isMoving, setIsMoving] = useState(false);
 
   useEffect(() => {
-    console.count('moving');
     const parentContainer = swiperRef.current;
     let totalXMovement = 0;
     let allowMove = true;
+    const tl = gsap;
     const handlePointerMove = (event) => {
       if (allowMove === false) return;
       const currentPath = location.pathname;
@@ -287,23 +287,19 @@ const App = () => {
         totalXMovement = 0;
         return;
       }
-      const tl = gsap;
       tl.to(swiperRef.current, {
-        duration: 0.01,
+        duration: 0.1,
         x: `+=${Math.round(currentMoveAmount)}`,
         skewX: `+=${Math.round(currentMoveAmount / 50)}`,
       });
-      if (Math.abs(totalXMovement) > 200) {
+      if (Math.abs(totalXMovement) > 100) {
+        allowMove = false;
         if (totalXMovement > 0) history.push(routes[index + 1].path);
         if (totalXMovement < 0) history.push(routes[index - 1].path);
-        // eslint-disable-next-line no-use-before-define
-        handlePointerUp();
-        allowMove = false;
       }
     };
     const handlePointerUp = () => {
-      gsap.set(swiperRef.current, { clearProps: 'all' });
-
+      tl.set(swiperRef.current, { clearProps: 'all' });
       parentContainer.removeEventListener('pointermove', handlePointerMove);
     };
 
@@ -312,8 +308,7 @@ const App = () => {
       once: true,
     });
     return () => {
-      console.count('resting swiper');
-      gsap.set(swiperRef.current, { clearProps: 'all' });
+      tl.globalTimeline.set(swiperRef.current, { clearProps: 'all' });
     };
   }, [isMoving]);
 

@@ -34,34 +34,88 @@ export const exitAnimation = (
   return curTl;
 };
 
-const animateIntroText = () => {
-  const introTextElement = document.getElementById('intro-text');
-  const introText = 'Welcome!';
-  [...introText].forEach((letter) => {
-    const div = document.createElement('div');
-    introTextElement.appendChild(div);
-    // span.style.cssText = `display: none; opacity: 0; visibility: 0`;
-    div.innerText = letter;
-  });
-  const tl = gsap
-    .timeline()
-    .from([introTextElement.children], {
-      duration: 1,
-      ease: 'back',
-      autoAlpha: 0,
-      // display: 'none',
-      skewX: -15,
-      y: -100,
-      stagger: {
-        each: 0.2,
-      },
-    })
-    .to(
-      [introTextElement.children],
+const animateIntroText = (
+  introText = '' || [],
+  options = {
+    keepDisplay: false,
+    move: false,
+    typewrite: false,
+    xPos: 0,
+    yPos: 0,
+  }
+) => {
+  const { keepDisplay, move, typewrite, xPos, yPos } = options;
+  const createAnimation = () => {
+    const introTextElement = document.getElementById('intro-text');
+    const containerDiv = document.createElement('div');
+    introTextElement.appendChild(containerDiv);
+    containerDiv.setAttribute('class', 'intro-text-container');
+
+    [...introText].forEach((letter) => {
+      const div = document.createElement('div');
+      containerDiv.appendChild(div);
+      let copyLetter = letter;
+      if (copyLetter === ' ') {
+        console.log(copyLetter);
+        copyLetter = '-';
+        div.style.opacity = 0;
+      }
+      div.innerText = copyLetter;
+    });
+    const tl = gsap.timeline().set(containerDiv, { display: 'grid' });
+    if (typewrite) {
+      tl.set(containerDiv, { fontFamily: `'IBM Plex Sans', sans-serif` })
+        .to(containerDiv, {
+          xPercent: xPos,
+          yPercent: yPos,
+          scale: 0.2,
+          duration: 0.2,
+        })
+        .from([containerDiv.children], {
+          duration: 0.3,
+          ease: 'none',
+          autoAlpha: 0,
+          yoyo: true,
+          stagger: {
+            yoyo: true,
+            each: 0.1,
+          },
+        });
+    } else {
+      tl.from([containerDiv.children], {
+        duration: 1,
+        ease: 'back',
+        autoAlpha: 0,
+        skewX: -15,
+        y: -100,
+        stagger: {
+          each: 0.2,
+        },
+      });
+    }
+    if (move)
+      tl.to([containerDiv.children], {
+        duration: 0.7,
+        ease: 'power3.in',
+        y: -50,
+        x: -50,
+        stagger: {
+          each: -0.1,
+        },
+      }).to(
+        containerDiv,
+        { duration: 0.7, scale: 0.25, yPercent: -30, xPercent: -80 },
+        '<'
+      );
+    if (keepDisplay) return tl;
+    tl.to(
+      [containerDiv.children],
       {
         duration: 0.7,
         ease: 'power3.in',
-        onComplete: () => gsap.set(introTextElement, { display: 'none' }),
+        onComplete: () => {
+          gsap.set([containerDiv], { display: 'none' });
+        },
         autoAlpha: 0,
         y: -10,
         skewX: 15,
@@ -71,7 +125,9 @@ const animateIntroText = () => {
       },
       '<95%'
     );
-  return tl;
+    return tl;
+  };
+  return createAnimation(introText);
 };
 
 export const onStartWrapper = (pageWrapper, curtain) =>
@@ -112,7 +168,40 @@ export const onStartWrapper = (pageWrapper, curtain) =>
       },
       '<50%'
     )
-    .add(animateIntroText(), '<50%')
+    .add(animateIntroText('Welcome!'), '<50%')
+    .add(animateIntroText(`Let's Code`, { keepDisplay: true, move: true }))
+    .add(
+      animateIntroText(`npm run start ...`, {
+        keepDisplay: true,
+        move: false,
+        typewrite: true,
+        // xPos: -50,
+      })
+    )
+    .add(
+      animateIntroText(`building ...`, {
+        keepDisplay: true,
+        move: false,
+        typewrite: true,
+        yPos: 25,
+      }).repeat(3)
+    )
+    .add(
+      animateIntroText(`Compiled successfully!`, {
+        keepDisplay: true,
+        move: false,
+        typewrite: true,
+        yPos: 50,
+      })
+    )
+    .to(['.intro-text-container div'], {
+      autoAlpha: 0,
+      duration: 0.3,
+      x: -10,
+
+      stagger: { each: 0.05 },
+    })
+
     .set(pageWrapper, { transformOrigin: 'top top' })
     .to(
       pageWrapper,
@@ -121,7 +210,7 @@ export const onStartWrapper = (pageWrapper, curtain) =>
         duration: 2.5,
         onComplete: () => gsap.set(pageWrapper, { autoAlpha: 0 }),
       },
-      '<95%'
+      '<75%'
     )
     .from(
       'section',

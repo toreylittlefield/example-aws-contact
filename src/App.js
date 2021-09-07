@@ -267,11 +267,13 @@ const App = () => {
   const [isMoving, setIsMoving] = useState(false);
 
   useEffect(() => {
+    if (isMoving === false) return;
     const parentContainer = swiperRef.current;
     let totalXMovement = 0;
     let allowMove = true;
     const tl = gsap;
     const handlePointerMove = (event) => {
+      console.log('move event');
       if (allowMove === false) return;
       const currentPath = location.pathname;
       const index = routes.findIndex((route) => route.path === currentPath);
@@ -288,9 +290,9 @@ const App = () => {
         return;
       }
       tl.to(swiperRef.current, {
-        duration: 0.1,
-        x: `+=${Math.round(currentMoveAmount)}`,
-        skewX: `+=${Math.round(currentMoveAmount / 50)}`,
+        duration: 0.05,
+        xPercent: `+=${Math.round(currentMoveAmount / 5)}`,
+        skewX: `+=${Math.round(currentMoveAmount / 20)}`,
       });
       if (Math.abs(totalXMovement) > 100) {
         allowMove = false;
@@ -298,15 +300,15 @@ const App = () => {
         if (totalXMovement < 0) history.push(routes[index - 1].path);
       }
     };
-    const handlePointerUp = () => {
-      tl.set(swiperRef.current, { clearProps: 'all' });
-      parentContainer.removeEventListener('pointermove', handlePointerMove);
-    };
+    // const handlePointerUp = () => {
+    //   tl.set(swiperRef.current, { clearProps: 'all' });
+    //   parentContainer.removeEventListener('pointermove', handlePointerMove);
+    // };
 
-    parentContainer.addEventListener('pointermove', handlePointerMove);
-    parentContainer.addEventListener('pointerup', handlePointerUp, {
-      once: true,
-    });
+    parentContainer.onpointermove = handlePointerMove;
+    // parentContainer.addEventListener('pointerup', handlePointerUp, {
+    //   once: true,
+    // });
     return () => {
       tl.globalTimeline.set(swiperRef.current, { clearProps: 'all' });
     };
@@ -316,9 +318,24 @@ const App = () => {
    *
    * @param {PointerEvent} event
    */
-  const handlePointerDown = () => {
+  const handlePointerDown = (event) => {
+    event.preventDefault();
     console.log('handle pointer down');
-    setIsMoving((prev) => !prev);
+    setIsMoving(true);
+  };
+
+  const handlePointerUp = (event) => {
+    event.preventDefault();
+    swiperRef.current.onpointermove = null;
+    gsap.set(swiperRef.current, { clearProps: 'all' });
+    setIsMoving(false);
+  };
+
+  const handlePointerLeave = (event) => {
+    event.preventDefault();
+    swiperRef.current.onpointermove = null;
+    gsap.set(swiperRef.current, { clearProps: 'all' });
+    setIsMoving(false);
   };
 
   return (
@@ -340,7 +357,13 @@ const App = () => {
         <div className="curtain" />
         <div className="curtain" />
       </div>
-      <div id="swiper" ref={swiperRef} onPointerDown={handlePointerDown}>
+      <div
+        id="swiper"
+        ref={swiperRef}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+        onPointerLeave={handlePointerLeave}
+      >
         {routes.map(({ path, component: Component, key }) => (
           <Route key={key} path={path} exact>
             {({ match }) => (

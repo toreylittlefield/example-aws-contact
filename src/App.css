@@ -88,3 +88,10 @@ code span {
   text-align: center;
   color: white;
 }
+
+#btn-skip-intro {
+  position: fixed;
+  bottom: 30px;
+  left: 30px;
+  z-index: 999999999;
+}

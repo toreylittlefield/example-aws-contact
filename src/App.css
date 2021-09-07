@@ -28,6 +28,10 @@ pre {
   height: 400px;
 }
 
+code span {
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+
 .page-wrapper {
   position: fixed;
   width: 100%;
@@ -58,23 +62,29 @@ pre {
 }
 
 #intro-text {
-  /* font-size: 16rem; */
   font-size: 20vw;
   text-align: center;
   font-family: 'Indie Flower', cursive;
-  /* opacity: 0;
-  visibility: 0;
-  display: none; */
+  display: grid;
+  place-content: center;
+  grid-auto-flow: row;
+  grid-template-columns: 1fr;
+  color: white;
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  z-index: 9999999;
+}
+
+.intro-text-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -60%);
   display: grid;
   place-content: center;
   grid-auto-flow: column;
   grid-template-columns: auto;
+  text-align: center;
   color: white;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  height: 100%;
-  width: 100%;
-  transform: translate(-50%, -60%);
-  z-index: 9999999;
 }

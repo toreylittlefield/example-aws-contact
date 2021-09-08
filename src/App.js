@@ -264,17 +264,14 @@ const App = () => {
   };
 
   const [isMoving, setIsMoving] = useState(false);
-  const initalMovePos = { xPos: 0, eventMovX: 0 };
-  const [movePos, setMovePos] = useState(initalMovePos);
+  // const initalMovePos = { xPos: 0, eventMovX: 0 };
+  // const [movePos, setMovePos] = useState(initalMovePos);
 
   useEffect(() => {
     if (isMoving === false) return;
     const parentContainer = swiperRef.current;
     let totalXMovement = 0;
     let threshold = 90;
-    let registerMove = false;
-    let setToTouch = false;
-    // let allowMove = true;
     const tl = gsap;
     /**
      *
@@ -282,27 +279,34 @@ const App = () => {
      * @returns
      */
     const handlePointerMove = (event) => {
-      console.log({ event });
       if (event.isPrimary === false) return;
-      if (registerMove === false) {
-        registerMove = true;
-        return;
-      }
+
+      // if user is selecting text do not register swipe
+      if (window.getSelection().toString().length > 0) return;
+
       gsap.set(document.body, { overflow: 'hidden' });
       const currentPath = location.pathname;
       const index = routes.findIndex((route) => route.path === currentPath);
-
+      let tempMovement = event.movementX;
+      if (event.pointerType === 'touch') {
+        tempMovement *= 10;
+        threshold = 3;
+      }
       totalXMovement += event.movementX;
-      setMovePos((prev) => {
-        const copy = prev;
-        copy.xPos = totalXMovement;
-        copy.eventMovX = event.movementX;
-        return copy;
-      });
-      let currentMoveAmount = event.movementX;
+      // setMovePos((prev) => {
+      //   const copy = prev;
+      //   copy.xPos = totalXMovement;
+      //   copy.eventMovX = event.movementX;
+      //   copy.tempMovement = tempMovement;
+      //   return copy;
+      // });
+      let currentMoveAmount = tempMovement;
+      // page boundaries
       if (totalXMovement > event.pageX) currentMoveAmount = event.pageX / 2;
       if (totalXMovement < -1 * event.pageX)
         currentMoveAmount = event.pageX / 2;
+
+      // routes / index boundaries
       if (index === 0 && totalXMovement < 0) {
         totalXMovement = 0;
         return;
@@ -311,25 +315,20 @@ const App = () => {
         totalXMovement = 0;
         return;
       }
-      if (event.pointerType === 'touch' && setToTouch === false) {
-        setToTouch = true;
-        currentMoveAmount *= 10;
-        totalXMovement *= 10;
-        threshold = 4;
-      }
+
       if (Math.abs(totalXMovement) < threshold) return;
 
       tl.to(parentContainer, {
         overwrite: 'auto',
         // userSelect: 'none',
         // touchAction: 'none',
-        ease: 'none',
-        duration: 0.3,
+        ease: 'power.inOut',
+        duration: 0.5,
         x: `+=${Math.ceil(currentMoveAmount)}`,
         // skewX: `+=${Math.ceil(currentMoveAmount)}`,
         // scale: `+=${-1 * Math.abs(Math.ceil(currentMoveAmount) / 10)}`,
         onComplete: () => {
-          if (Math.abs(totalXMovement) > threshold * 1.1) {
+          if (Math.abs(totalXMovement) > threshold * 3) {
             // allowMove = false;
 
             tl.to(parentContainer, {
@@ -340,12 +339,13 @@ const App = () => {
               duration: 0,
               ease: 'none',
               onComplete: () => {
+                tl.set(parentContainer, { backgroundColor: '' });
                 tl.from(parentContainer, {
                   duration: 0.3,
                   ease: 'none',
                   backgroundColor: 'green',
                 });
-                setMovePos(initalMovePos);
+                // setMovePos(initalMovePos);
               },
             });
             // if (totalXMovement > 0) history.push(routes[index + 1].path);
@@ -354,11 +354,11 @@ const App = () => {
             tl.to(parentContainer, {
               x: 0,
               skewX: 0,
-              duration: 1,
+              duration: 0.5,
               ease: 'back',
               overwrite: 'auto',
             });
-            setMovePos(initalMovePos);
+            // setMovePos(initalMovePos);
           }
         },
       });
@@ -375,9 +375,7 @@ const App = () => {
    * @param {PointerEvent} event
    */
   const handlePointerDown = () => {
-    // event.preventDefault();
-    // console.log({ event });
-    // console.log('handle pointer down');
+    // document.querySelector('div').tagName
     setIsMoving(true);
   };
 
@@ -398,35 +396,35 @@ const App = () => {
     setIsMoving(false);
   };
 
-  const [moveEvent, setMoveEvent] = useState(null);
-  const handleMove = (event) =>
-    setMoveEvent((prev) => {
-      const {
-        // clientX,
-        // clientY,
-        pageX,
-        // pageY,
-        movementX,
-        // movementY,
-        // screenX,
-        // screenY,
-      } = event;
-      const copy = prev;
-      let movXCumulative = 0;
-      if (copy !== null && copy.movXCumulative && copy.movXCumulative !== null)
-        movXCumulative = copy.movXCumulative;
-      return {
-        // clientX,
-        // clientY,
-        pageX,
-        // pageY,
-        movementX,
-        // movementY,
-        movXCumulative: movXCumulative + movementX,
-        // screenX,
-        // screenY,
-      };
-    });
+  // const [moveEvent, setMoveEvent] = useState(null);
+  // const handleMove = (event) =>
+  //   setMoveEvent((prev) => {
+  //     const {
+  //       // clientX,
+  //       // clientY,
+  //       pageX,
+  //       // pageY,
+  //       movementX,
+  //       // movementY,
+  //       // screenX,
+  //       // screenY,
+  //     } = event;
+  //     const copy = prev;
+  //     let movXCumulative = 0;
+  //     if (copy !== null && copy.movXCumulative && copy.movXCumulative !== null)
+  //       movXCumulative = copy.movXCumulative;
+  //     return {
+  //       // clientX,
+  //       // clientY,
+  //       pageX,
+  //       // pageY,
+  //       movementX,
+  //       // movementY,
+  //       movXCumulative: movXCumulative + movementX,
+  //       // screenX,
+  //       // screenY,
+  //     };
+  //   });
 
   return (
     <div className="App">
@@ -453,9 +451,9 @@ const App = () => {
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerLeave}
-        onPointerMove={handleMove}
+        // onPointerMove={handleMove}
       >
-        <Button
+        {/* <Button
           onClick={() => setMoveEvent(null)}
           variant="outlined"
           color="primary"
@@ -464,7 +462,7 @@ const App = () => {
           Reset MoveEvent
         </Button>
         <h1>{JSON.stringify(moveEvent, null, 2)}</h1>
-        <h2>{JSON.stringify(movePos, null, 2)}</h2>
+        <h2>{JSON.stringify(movePos, null, 2)}</h2> */}
         {routes.map(({ path, component: Component, key }) => (
           <Route key={key} path={path} exact>
             {({ match }) => (

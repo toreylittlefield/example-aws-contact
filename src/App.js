@@ -323,7 +323,7 @@ const App = () => {
         // userSelect: 'none',
         // touchAction: 'none',
         ease: 'power.inOut',
-        duration: 0.5,
+        duration: 0.05,
         x: `+=${Math.ceil(currentMoveAmount)}`,
         // skewX: `+=${Math.ceil(currentMoveAmount)}`,
         // scale: `+=${-1 * Math.abs(Math.ceil(currentMoveAmount) / 10)}`,
@@ -348,8 +348,8 @@ const App = () => {
                 // setMovePos(initalMovePos);
               },
             });
-            // if (totalXMovement > 0) history.push(routes[index + 1].path);
-            // if (totalXMovement < 0) history.push(routes[index - 1].path);
+            if (totalXMovement > 0) history.push(routes[index + 1].path);
+            if (totalXMovement < 0) history.push(routes[index - 1].path);
           } else {
             tl.to(parentContainer, {
               x: 0,

@@ -97,6 +97,14 @@ code span {
 }
 
 #swiper {
-  touch-action: none;
-  user-select: none;
+  /* touch-action: none;
+  user-select: none; */
+  touch-action: auto;
+}
+
+#btn-reset {
+  z-index: 9999999999;
+  position: fixed;
+  left: 30px;
+  top: 100px;
 }

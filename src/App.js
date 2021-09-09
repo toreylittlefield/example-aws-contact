@@ -324,7 +324,8 @@ const App = () => {
      * @returns
      */
     const handlePointerMove = (event) => {
-      if (event.movementY > event.movementX) return;
+      if (Math.abs(event.movementY) > Math.abs(event.movementX)) return;
+
       eventCount += 1;
 
       console.log({ event });

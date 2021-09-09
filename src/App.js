@@ -282,9 +282,7 @@ const App = () => {
     let [lowerBound, upperBound, eventCount] = [7, 30, 0];
     gsap.set(document.body, { overflow: 'hidden' });
     const currentPath = location.pathname;
-    const pathIndex = routes.findpathIndex(
-      (route) => route.path === currentPath
-    );
+    const pathIndex = routes.findIndex((route) => route.path === currentPath);
     /**
      *
      * @param {PointerEvent} event

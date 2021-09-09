@@ -414,10 +414,7 @@ const App = () => {
       };
 
       userMoved(event);
-      if (
-        Math.abs(totalXMovement * multiplier) >
-        document.body.getBoundingClientRect().width / 4
-      ) {
+      if (Math.abs(totalXMovement * multiplier) > transitionPageThreshold) {
         if (addListener === true) return;
         addListener = true;
         setWillTransition(true);

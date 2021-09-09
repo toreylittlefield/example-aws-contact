@@ -98,6 +98,7 @@ code span {
 
 #swiper {
   min-height: 80vh;
+  transition: transform 0.65s cubic-bezier(0.15, 0.3, 0.25, 1);
 }
 
 #btn-reset {

@@ -263,13 +263,11 @@ const App = () => {
     setReverseAnimation((prev) => !prev);
   };
 
-  const [isMoving, setIsMoving] = useState(false);
-  // const initalMovePos = { xPos: 0, eventMovX: 0 };
-  // const [movePos, setMovePos] = useState(initalMovePos);
+  const [isPointerDown, setIsPointerDown] = useState(false);
   const startX = useRef(null);
 
   useEffect(() => {
-    if (isMoving === false) return;
+    if (isPointerDown === false) return;
     const parentContainer = swiperRef.current;
     let totalXMovement = 0;
     let threshold = 90;
@@ -292,7 +290,6 @@ const App = () => {
       eventCount += 1;
 
       totalXMovement = event.clientX - startX.current;
-      console.log({ totalXMovement });
       // if user is selecting text do not register swipe
       if (
         eventCount > 1 &&
@@ -374,7 +371,7 @@ const App = () => {
         parentContainer.style.touchAction = '';
       }
     };
-  }, [isMoving]);
+  }, [isPointerDown]);
 
   /**
    *
@@ -382,7 +379,7 @@ const App = () => {
    */
   const handlePointerDown = (event) => {
     event.stopPropagation();
-    setIsMoving(true);
+    setIsPointerDown(true);
     startX.current = event.clientX;
   };
 
@@ -394,7 +391,7 @@ const App = () => {
       swiperRef.current.style.transiton = ``;
       swiperRef.current.style.userSelect = '';
       swiperRef.current.style.touchAction = '';
-      setIsMoving(false);
+      setIsPointerDown(false);
     }, 500);
   };
 

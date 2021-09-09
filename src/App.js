@@ -72,7 +72,7 @@ const initGsapTiming = {
 const App = () => {
   const history = useHistory();
   const location = useLocation();
-  const [viewIndex, setviewIndex] = useState(null);
+  const [viewpathIndex, setviewpathIndex] = useState(null);
   const [gsapTimingState, setGsapTimingState] = useState(initGsapTiming);
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up('sm'));
@@ -82,14 +82,16 @@ const App = () => {
 
   const initialState = () => {
     const pathOnLoad = history.location.pathname;
-    const initIndex = routes.findIndex((route) => route.path === pathOnLoad);
-    return initIndex === -1 ? 0 : initIndex;
+    const initpathIndex = routes.findIndex(
+      (route) => route.path === pathOnLoad
+    );
+    return initpathIndex === -1 ? 0 : initpathIndex;
   };
 
   const [isIntroAniRunning, setIsIntroAniRunning] = useState(null);
 
   useEffect(() => {
-    if (viewIndex === null) setviewIndex(initialState);
+    if (viewpathIndex === null) setviewpathIndex(initialState);
     if (isIntroAniRunning === false || isIntroAniRunning) return;
     setIsIntroAniRunning(true);
     introTimeline.current = gsap.globalTimeline;
@@ -103,12 +105,12 @@ const App = () => {
 
   useEffect(() => {
     if (history.action === 'POP') {
-      setviewIndex(initialState);
+      setviewpathIndex(initialState);
     }
     document
       .querySelectorAll('iframe[title="recaptcha challenge"]', '.page')
-      ?.forEach((element, index) => {
-        if (index === 0) return;
+      ?.forEach((element, pathIndex) => {
+        if (pathIndex === 0) return;
         if (element.tagName === 'IFRAME')
           return element.parentElement.parentElement.remove();
       });
@@ -116,9 +118,9 @@ const App = () => {
 
   const handleChange = (event) => {
     const el =
-      event.target.parentElement.getAttribute('dataindex') ??
-      event.target.getAttribute('dataindex');
-    setviewIndex(parseInt(el) ?? viewIndex + 1);
+      event.target.parentElement.getAttribute('datapathIndex') ??
+      event.target.getAttribute('datapathIndex');
+    setviewpathIndex(parseInt(el) ?? viewpathIndex + 1);
   };
 
   const handleSkipIntro = () => {
@@ -126,10 +128,10 @@ const App = () => {
     introTimeline.current.totalProgress(0.9);
   };
 
-  // const handleChangeIndex = (index) => {
-  //   if (index >= routes.length) return;
-  //   const pathTo = routes[index].path;
-  //   setviewIndex(index);
+  // const handleChangepathIndex = (pathIndex) => {
+  //   if (pathIndex >= routes.length) return;
+  //   const pathTo = routes[pathIndex].path;
+  //   setviewpathIndex(pathIndex);
   //   history.push(pathTo);
   // };
   const [reverseAnimation, setReverseAnimation] = useState(false);
@@ -280,7 +282,9 @@ const App = () => {
     let [lowerBound, upperBound, eventCount] = [7, 30, 0];
     gsap.set(document.body, { overflow: 'hidden' });
     const currentPath = location.pathname;
-    const pathIndex = routes.findIndex((route) => route.path === currentPath);
+    const pathIndex = routes.findpathIndex(
+      (route) => route.path === currentPath
+    );
     /**
      *
      * @param {PointerEvent} event
@@ -302,7 +306,7 @@ const App = () => {
         threshold = 7;
       }
 
-      // routes / index boundaries do not allow movement
+      // routes / pathIndex boundaries do not allow movement
       const checkBoundaries = (index = 0, length = 0, boundary = 0) => {
         const bounds = { withInBounds: false, boundaryValue: 0 };
         if (index === 0 && boundary < 0) {
@@ -356,7 +360,7 @@ const App = () => {
 
       const userMovedRaf = () => {
         console.log({ totalXMovement });
-        console.log(window.screenX);
+        console.log(document.body.getBoundingClientRect().width / 2);
         if (totalXMovement > document.body.getBoundingClientRect().width / 2)
           return;
         setStyles(parentContainer, { animate: deltaX * multiplier });
@@ -378,9 +382,10 @@ const App = () => {
             // parentContainer.style.transform = ``;
             // parentContainer.style.transiton = ``;
             // parentContainer.style.userSelect = '';
+            resetStyles(parentContainer);
             setTimeout(() => {
-              // if (totalXMovement > 0) history.push(routes[index + 1].path);
-              // if (totalXMovement < 0) history.push(routes[index - 1].path);
+              if (totalXMovement > 0) history.push(routes[pathIndex + 1].path);
+              if (totalXMovement < 0) history.push(routes[pathIndex - 1].path);
             }, 350);
             setTimeout(() => {
               resetStyles(parentContainer);

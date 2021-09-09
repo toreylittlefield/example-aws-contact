@@ -274,19 +274,19 @@ const App = () => {
     let deltaX = 0;
     let raf;
     let multiplier = 1;
+    const endPathIndex = routes.length - 2;
     // For Single Swipe - Handling a single fast swipe range
     // eslint-disable-next-line prefer-const
-    let [lowerBound, upperBound, eventCount] = [10, 50, 0];
+    let [lowerBound, upperBound, eventCount] = [7, 30, 0];
     gsap.set(document.body, { overflow: 'hidden' });
     const currentPath = location.pathname;
-    const index = routes.findIndex((route) => route.path === currentPath);
+    const pathIndex = routes.findIndex((route) => route.path === currentPath);
     /**
      *
      * @param {PointerEvent} event
      * @returns
      */
     const handlePointerMove = (event) => {
-      if (event.isPrimary === false) return;
       eventCount += 1;
 
       totalXMovement = event.clientX - startX.current;
@@ -303,55 +303,94 @@ const App = () => {
       }
 
       // routes / index boundaries do not allow movement
-      if (index === 0 && totalXMovement < 0) {
-        totalXMovement = 0;
-        return;
-      }
-      if (index === routes.length - 2 && totalXMovement > 0) {
-        totalXMovement = 0;
-        return;
-      }
+      const checkBoundaries = (index = 0, length = 0, boundary = 0) => {
+        const bounds = { withInBounds: false, boundaryValue: 0 };
+        if (index === 0 && boundary < 0) {
+          return bounds;
+        }
+        if (index === length && boundary > 0) {
+          return bounds;
+        }
+        bounds.boundaryValue = boundary;
+        bounds.withInBounds = true;
+        return bounds;
+      };
 
-      if (Math.abs(totalXMovement) < threshold) return;
+      const { withInBounds, boundaryValue } = checkBoundaries(
+        pathIndex,
+        endPathIndex,
+        totalXMovement
+      );
+      totalXMovement = boundaryValue;
+      if (!withInBounds) return;
+
+      // animate only if passed our threshold
+      if (Math.abs(totalXMovement) < threshold && eventCount === 1) return;
+
       if (eventCount === 1) {
         if (
           Math.abs(totalXMovement) >= lowerBound &&
           Math.abs(totalXMovement) <= upperBound
         )
-          multiplier *= 20;
+          multiplier *= 15;
+      } else {
+        multiplier = 1;
       }
-      parentContainer.style.touchAction = 'none';
-      parentContainer.style.userSelect = 'none';
-      parentContainer.style.transition = `transform 0.35s cubic-bezier(0.15, 0.3, 0.25, 1)`;
+
+      const setStyles = (element, { init = false, animate: value }) => {
+        const el = element;
+        if (init) el.style.touchAction = 'none';
+        el.style.userSelect = 'none';
+        el.style.transition = `transform .65s cubic-bezier(0.15, 0.3, 0.25, 1)`;
+        if (value)
+          el.style.transform = `translate3d(${value}px, 0px, 0px) skewX(${parseFloat(
+            1 - value / 100
+          )}deg)`;
+      };
+      setStyles(parentContainer, { init: true });
+
+      const resetStyles = (element) => {
+        const el = element;
+        el.style.cssText = '';
+      };
+
       const userMovedRaf = () => {
-        parentContainer.style.transform = `translate3d(${
-          deltaX * multiplier
-        }px, 0px, 0px)`;
+        console.log({ totalXMovement });
+        console.log(window.screenX);
+        if (totalXMovement > document.body.getBoundingClientRect().width / 2)
+          return;
+        setStyles(parentContainer, { animate: deltaX * multiplier });
         // once the paint job is done we 'release' animation frame variable to allow next paint job:
         raf = null;
       };
       const userMoved = (e) => {
         // if no previous request for animation frame - we allow js to proccess 'move' event:
         if (!raf) {
-          // if (Math.abs(totalXMovement) > threshold * 2.5) {
-          //   cancelAnimationFrame(userMovedRaf);
-          //   // alert(JSON.stringify({ totalXMovement, threshold }, null, 2));
-          //   // parentContainer.style.transform += `scale(0.85)`;
-          //   // parentContainer.style.transform = ``;
-          //   // parentContainer.style.transiton = ``;
-          //   // parentContainer.style.userSelect = '';
-          //   setTimeout(() => {
-          //     // if (totalXMovement > 0) history.push(routes[index + 1].path);
-          //     // if (totalXMovement < 0) history.push(routes[index - 1].path);
-          //   }, 350);
-          //   setTimeout(() => {
-          //     parentContainer.style.transform = ``;
-          //     parentContainer.style.transiton = ``;
-          //     parentContainer.style.userSelect = '';
-          //     parentContainer.style.touchAction = '';
-          //   }, 2000);
-          //   return;
-          // }
+          if (
+            Math.abs(deltaX * multiplier) >
+            document.body.getBoundingClientRect().width / 2
+          ) {
+            console.count('cancel raf');
+            // threshold * 2.5
+            cancelAnimationFrame(userMovedRaf);
+            // alert(JSON.stringify({ totalXMovement, threshold }, null, 2));
+            // parentContainer.style.transform += `scale(0.85)`;
+            // parentContainer.style.transform = ``;
+            // parentContainer.style.transiton = ``;
+            // parentContainer.style.userSelect = '';
+            setTimeout(() => {
+              // if (totalXMovement > 0) history.push(routes[index + 1].path);
+              // if (totalXMovement < 0) history.push(routes[index - 1].path);
+            }, 350);
+            setTimeout(() => {
+              resetStyles(parentContainer);
+              // parentContainer.style.transform = ``;
+              // // parentContainer.style.transiton = ``;
+              // parentContainer.style.userSelect = '';
+              // parentContainer.style.touchAction = '';
+            }, 1000);
+            return;
+          }
           deltaX = e.clientX - startX.current;
           raf = requestAnimationFrame(userMovedRaf);
         }
@@ -365,10 +404,10 @@ const App = () => {
       if (raf) {
         cancelAnimationFrame(raf);
         raf = null;
-        parentContainer.style.transform = ``;
-        parentContainer.style.transiton = ``;
-        parentContainer.style.userSelect = '';
-        parentContainer.style.touchAction = '';
+        // parentContainer.style.transform = ``;
+        // // parentContainer.style.transiton = ``;
+        // parentContainer.style.userSelect = '';
+        // parentContainer.style.touchAction = '';
       }
     };
   }, [isPointerDown]);
@@ -379,18 +418,20 @@ const App = () => {
    */
   const handlePointerDown = (event) => {
     event.stopPropagation();
+    if (event.isPrimary === false) return;
     setIsPointerDown(true);
     startX.current = event.clientX;
   };
 
   const handlePointerUp = (event) => {
+    console.count('p up');
     event.stopPropagation();
     setTimeout(() => {
       swiperRef.current.onpointermove = null;
-      swiperRef.current.style.transform = ``;
-      swiperRef.current.style.transiton = ``;
-      swiperRef.current.style.userSelect = '';
-      swiperRef.current.style.touchAction = '';
+      // swiperRef.current.style.transform = ``;
+      // // swiperRef.current.style.transiton = ``;
+      // swiperRef.current.style.userSelect = '';
+      // swiperRef.current.style.touchAction = '';
       setIsPointerDown(false);
     }, 500);
   };
@@ -420,18 +461,7 @@ const App = () => {
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
-        // onPointerMove={handleMove}
       >
-        {/* <Button
-          onClick={() => setMoveEvent(null)}
-          variant="outlined"
-          color="primary"
-          id="btn-reset"
-        >
-          Reset MoveEvent
-        </Button>
-        <h1>{JSON.stringify(moveEvent, null, 2)}</h1>
-        <h2>{JSON.stringify(movePos, null, 2)}</h2> */}
         {routes.map(({ path, component: Component, key }) => (
           <Route key={key} path={path} exact>
             {({ match }) => (

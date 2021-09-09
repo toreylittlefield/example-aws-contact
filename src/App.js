@@ -275,6 +275,29 @@ const App = () => {
 
   const [willTransition, setWillTransition] = useState(false);
 
+  /**
+   *
+   * @param {PointerEvent} event
+   */
+  const handlePointerDown = (event) => {
+    event.stopPropagation();
+    if (event.isPrimary === false) return;
+    setIsPointerDown(true);
+    startX.current = event.clientX;
+  };
+
+  const handlePointerUp = (event) => {
+    console.count('p up');
+    event.stopPropagation();
+    setTimeout(() => {
+      swiperRef.current.onpointermove = null;
+      if (willTransition === false) {
+        resetStyles(swiperRef.current);
+      }
+      setIsPointerDown(false);
+    }, 350);
+  };
+
   useEffect(() => {
     if (isPointerDown === false) return;
     const parentContainer = swiperRef.current;
@@ -285,6 +308,9 @@ const App = () => {
     let multiplier = 1;
     let addListener = false;
     const endPathIndex = routes.length - 2;
+    const transitionPageThreshold =
+      document.body.getBoundingClientRect().width / 4;
+    const animationLimit = transitionPageThreshold * 1.5;
     // For Single Swipe - Handling a single fast swipe range
     // eslint-disable-next-line prefer-const
     let [lowerBound, upperBound, eventCount] = [7, 30, 0];
@@ -305,11 +331,13 @@ const App = () => {
         eventCount > 1 &&
         Math.abs(totalXMovement) <= lowerBound &&
         window.getSelection().toString().length > 0
-      )
+      ) {
+        handlePointerUp();
         return;
+      }
 
       if (event.pointerType === 'touch') {
-        threshold = 7;
+        threshold = 3;
       }
 
       // routes / pathIndex boundaries do not allow movement
@@ -363,11 +391,12 @@ const App = () => {
 
       const userMovedRaf = () => {
         console.log({ totalXMovement });
-        console.log(document.body.getBoundingClientRect().width / 4);
+        console.log(transitionPageThreshold);
         console.log(deltaX * multiplier);
-        if (totalXMovement > document.body.getBoundingClientRect().width / 4)
-          return;
-        setStyles(parentContainer, { animate: deltaX * multiplier });
+        if (totalXMovement > transitionPageThreshold) return;
+        let moveAmount = deltaX * multiplier;
+        if (moveAmount >= animationLimit) moveAmount = animationLimit;
+        setStyles(parentContainer, { animate: moveAmount });
         // once the paint job is done we 'release' animation frame variable to allow next paint job:
         raf = null;
       };
@@ -388,13 +417,11 @@ const App = () => {
         addListener = true;
         setWillTransition(true);
         console.count('cancel raf');
-        // threshold * 2.5
         cancelAnimationFrame(userMovedRaf);
         // parentContainer.onTransitionEnd;
         parentContainer.addEventListener(
           'transitionend',
-          (transitionEvent) => {
-            console.log({ transitionEvent });
+          () => {
             if (totalXMovement > 0) history.push(routes[pathIndex + 1].path);
             if (totalXMovement < 0) history.push(routes[pathIndex - 1].path);
           },
@@ -422,29 +449,6 @@ const App = () => {
     }, 1500);
     return () => clearTimeout(timeOut);
   }, [willTransition]);
-
-  /**
-   *
-   * @param {PointerEvent} event
-   */
-  const handlePointerDown = (event) => {
-    event.stopPropagation();
-    if (event.isPrimary === false) return;
-    setIsPointerDown(true);
-    startX.current = event.clientX;
-  };
-
-  const handlePointerUp = (event) => {
-    console.count('p up');
-    event.stopPropagation();
-    setTimeout(() => {
-      swiperRef.current.onpointermove = null;
-      if (willTransition === false) {
-        resetStyles(swiperRef.current);
-      }
-      setIsPointerDown(false);
-    }, 350);
-  };
 
   return (
     <div className="App">

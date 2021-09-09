@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState, useEffect, useMemo, useRef } from 'react';
 import './App.css';
 import { Transition } from 'react-transition-group';
@@ -142,7 +141,7 @@ const App = () => {
 
   const moveGsap = matchesMemo ? 'xPercent' : 'yPercent';
 
-  // page transitions handled here animation
+  // page transitions animation with gsap
   useEffect(() => {
     if (prevElements.enterEl === null) return;
 
@@ -382,19 +381,13 @@ const App = () => {
    * @param {PointerEvent} event
    */
   const handlePointerDown = (event) => {
-    // event.preventDefault();
     event.stopPropagation();
-    // document.querySelector('div').tagName
-    console.log('pointer down');
     setIsMoving(true);
     startX.current = event.clientX;
   };
 
   const handlePointerUp = (event) => {
-    // event.preventDefault();
     event.stopPropagation();
-
-    console.log('pointer up');
     setTimeout(() => {
       swiperRef.current.onpointermove = null;
       swiperRef.current.style.transform = ``;
@@ -404,36 +397,6 @@ const App = () => {
       setIsMoving(false);
     }, 500);
   };
-
-  // const [moveEvent, setMoveEvent] = useState(null);
-  // const handleMove = (event) =>
-  //   setMoveEvent((prev) => {
-  //     const {
-  //       // clientX,
-  //       // clientY,
-  //       pageX,
-  //       // pageY,
-  //       movementX,
-  //       // movementY,
-  //       // screenX,
-  //       // screenY,
-  //     } = event;
-  //     const copy = prev;
-  //     let movXCumulative = 0;
-  //     if (copy !== null && copy.movXCumulative && copy.movXCumulative !== null)
-  //       movXCumulative = copy.movXCumulative;
-  //     return {
-  //       // clientX,
-  //       // clientY,
-  //       pageX,
-  //       // pageY,
-  //       movementX,
-  //       // movementY,
-  //       movXCumulative: movXCumulative + movementX,
-  //       // screenX,
-  //       // screenY,
-  //     };
-  //   });
 
   return (
     <div className="App">

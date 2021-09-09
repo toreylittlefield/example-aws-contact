@@ -266,7 +266,7 @@ const App = () => {
   };
 
   const [isPointerDown, setIsPointerDown] = useState(false);
-  const startX = useRef(null);
+  const startingPos = useRef(null);
 
   const resetStyles = (element) => {
     const el = element;
@@ -282,8 +282,9 @@ const App = () => {
   const handlePointerDown = (event) => {
     event.stopPropagation();
     if (event.isPrimary === false) return;
+    if (event.movementY > event.movementX) return;
     setIsPointerDown(true);
-    startX.current = event.clientX;
+    startingPos.current = { startX: event.clientX, startY: event.clientY };
   };
 
   const handlePointerUp = (event) => {
@@ -324,8 +325,9 @@ const App = () => {
      */
     const handlePointerMove = (event) => {
       eventCount += 1;
+      console.log({ event });
 
-      totalXMovement = event.clientX - startX.current;
+      totalXMovement = event.clientX - startingPos.current.startX;
       // if user is selecting text do not register swipe
       if (
         eventCount > 1 &&
@@ -403,7 +405,7 @@ const App = () => {
       const userMoved = (e) => {
         // if no previous request for animation frame - we allow js to proccess 'move' event:
         if (!raf) {
-          deltaX = e.clientX - startX.current;
+          deltaX = e.clientX - startingPos.current.startX;
           raf = requestAnimationFrame(userMovedRaf);
         }
       };

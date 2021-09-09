@@ -348,10 +348,10 @@ const App = () => {
       // routes / pathIndex boundaries do not allow movement
       const checkBoundaries = (index = 0, length = 0, boundary = 0) => {
         const bounds = { withInBounds: false, boundaryValue: 0 };
-        if (index === 0 && boundary < 0) {
+        if (index === 0 && boundary > 0) {
           return bounds;
         }
-        if (index === length && boundary > 0) {
+        if (index === length && boundary < 0) {
           return bounds;
         }
         bounds.boundaryValue = boundary;
@@ -398,10 +398,10 @@ const App = () => {
         console.log({ totalXMovement });
         console.log(transitionPageThreshold);
         console.log(deltaX * multiplier);
-        if (totalXMovement > transitionPageThreshold) return;
+        if (Math.abs(totalXMovement) > transitionPageThreshold) return;
         let moveAmount = deltaX * multiplier;
         if (moveAmount >= animationLimit) moveAmount = animationLimit;
-        setStyles(parentContainer, { animate: moveAmount });
+        setStyles(parentContainer, { animate: -1 * moveAmount });
         // once the paint job is done we 'release' animation frame variable to allow next paint job:
         raf = null;
       };
@@ -427,8 +427,8 @@ const App = () => {
         parentContainer.addEventListener(
           'transitionend',
           () => {
-            if (totalXMovement > 0) history.push(routes[pathIndex + 1].path);
-            if (totalXMovement < 0) history.push(routes[pathIndex - 1].path);
+            if (totalXMovement > 0) history.push(routes[pathIndex - 1].path);
+            if (totalXMovement < 0) history.push(routes[pathIndex + 1].path);
           },
           { once: true }
         );

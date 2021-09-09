@@ -324,7 +324,9 @@ const App = () => {
      * @returns
      */
     const handlePointerMove = (event) => {
+      if (event.movementY > event.movementX) return;
       eventCount += 1;
+
       console.log({ event });
 
       totalXMovement = event.clientX - startingPos.current.startX;

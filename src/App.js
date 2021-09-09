@@ -268,6 +268,13 @@ const App = () => {
   const [isPointerDown, setIsPointerDown] = useState(false);
   const startX = useRef(null);
 
+  const resetStyles = (element) => {
+    const el = element;
+    el.style.cssText = '';
+  };
+
+  const [willTransition, setWillTransition] = useState(false);
+
   useEffect(() => {
     if (isPointerDown === false) return;
     const parentContainer = swiperRef.current;
@@ -276,6 +283,7 @@ const App = () => {
     let deltaX = 0;
     let raf;
     let multiplier = 1;
+    let addListener = false;
     const endPathIndex = routes.length - 2;
     // For Single Swipe - Handling a single fast swipe range
     // eslint-disable-next-line prefer-const
@@ -341,9 +349,11 @@ const App = () => {
 
       const setStyles = (element, { init = false, animate: value }) => {
         const el = element;
-        if (init) el.style.touchAction = 'none';
-        el.style.userSelect = 'none';
-        el.style.transition = `transform .65s cubic-bezier(0.15, 0.3, 0.25, 1)`;
+        if (init) {
+          el.style.touchAction = 'none';
+          el.style.userSelect = 'none';
+          el.style.transition = `transform .65s cubic-bezier(0.15, 0.3, 0.25, 1)`;
+        }
         if (value)
           el.style.transform = `translate3d(${value}px, 0px, 0px) skewX(${parseFloat(
             1 - value / 100
@@ -351,15 +361,11 @@ const App = () => {
       };
       setStyles(parentContainer, { init: true });
 
-      const resetStyles = (element) => {
-        const el = element;
-        el.style.cssText = '';
-      };
-
       const userMovedRaf = () => {
         console.log({ totalXMovement });
-        console.log(document.body.getBoundingClientRect().width / 2);
-        if (totalXMovement > document.body.getBoundingClientRect().width / 2)
+        console.log(document.body.getBoundingClientRect().width / 4);
+        console.log(deltaX * multiplier);
+        if (totalXMovement > document.body.getBoundingClientRect().width / 4)
           return;
         setStyles(parentContainer, { animate: deltaX * multiplier });
         // once the paint job is done we 'release' animation frame variable to allow next paint job:
@@ -368,38 +374,33 @@ const App = () => {
       const userMoved = (e) => {
         // if no previous request for animation frame - we allow js to proccess 'move' event:
         if (!raf) {
-          if (
-            Math.abs(deltaX * multiplier) >
-            document.body.getBoundingClientRect().width / 2
-          ) {
-            console.count('cancel raf');
-            // threshold * 2.5
-            cancelAnimationFrame(userMovedRaf);
-            // alert(JSON.stringify({ totalXMovement, threshold }, null, 2));
-            // parentContainer.style.transform += `scale(0.85)`;
-            // parentContainer.style.transform = ``;
-            // parentContainer.style.transiton = ``;
-            // parentContainer.style.userSelect = '';
-            resetStyles(parentContainer);
-            setTimeout(() => {
-              if (totalXMovement > 0) history.push(routes[pathIndex + 1].path);
-              if (totalXMovement < 0) history.push(routes[pathIndex - 1].path);
-            }, 350);
-            setTimeout(() => {
-              resetStyles(parentContainer);
-              // parentContainer.style.transform = ``;
-              // // parentContainer.style.transiton = ``;
-              // parentContainer.style.userSelect = '';
-              // parentContainer.style.touchAction = '';
-            }, 1000);
-            return;
-          }
           deltaX = e.clientX - startX.current;
           raf = requestAnimationFrame(userMovedRaf);
         }
       };
 
       userMoved(event);
+      if (
+        Math.abs(totalXMovement * multiplier) >
+        document.body.getBoundingClientRect().width / 4
+      ) {
+        if (addListener === true) return;
+        addListener = true;
+        setWillTransition(true);
+        console.count('cancel raf');
+        // threshold * 2.5
+        cancelAnimationFrame(userMovedRaf);
+        // parentContainer.onTransitionEnd;
+        parentContainer.addEventListener(
+          'transitionend',
+          (transitionEvent) => {
+            console.log({ transitionEvent });
+            if (totalXMovement > 0) history.push(routes[pathIndex + 1].path);
+            if (totalXMovement < 0) history.push(routes[pathIndex - 1].path);
+          },
+          { once: true }
+        );
+      }
     };
 
     parentContainer.onpointermove = handlePointerMove;
@@ -407,13 +408,20 @@ const App = () => {
       if (raf) {
         cancelAnimationFrame(raf);
         raf = null;
-        // parentContainer.style.transform = ``;
-        // // parentContainer.style.transiton = ``;
-        // parentContainer.style.userSelect = '';
-        // parentContainer.style.touchAction = '';
+        // resetStyles(parentContainer);
       }
     };
   }, [isPointerDown]);
+
+  useEffect(() => {
+    if (willTransition === false) return;
+    const timeOut = setTimeout(() => {
+      console.count('reset styles');
+      resetStyles(swiperRef.current);
+      setWillTransition(false);
+    }, 1500);
+    return () => clearTimeout(timeOut);
+  }, [willTransition]);
 
   /**
    *
@@ -431,12 +439,11 @@ const App = () => {
     event.stopPropagation();
     setTimeout(() => {
       swiperRef.current.onpointermove = null;
-      // swiperRef.current.style.transform = ``;
-      // // swiperRef.current.style.transiton = ``;
-      // swiperRef.current.style.userSelect = '';
-      // swiperRef.current.style.touchAction = '';
+      if (willTransition === false) {
+        resetStyles(swiperRef.current);
+      }
       setIsPointerDown(false);
-    }, 500);
+    }, 350);
   };
 
   return (

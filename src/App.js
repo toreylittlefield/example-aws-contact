@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useState, useEffect, useMemo, useRef } from 'react';
 import './App.css';
 import { Transition } from 'react-transition-group';
@@ -266,13 +267,22 @@ const App = () => {
   const [isMoving, setIsMoving] = useState(false);
   // const initalMovePos = { xPos: 0, eventMovX: 0 };
   // const [movePos, setMovePos] = useState(initalMovePos);
+  const startX = useRef(null);
 
   useEffect(() => {
     if (isMoving === false) return;
     const parentContainer = swiperRef.current;
     let totalXMovement = 0;
     let threshold = 90;
-    const tl = gsap;
+    let deltaX = 0;
+    let raf;
+    let multiplier = 1;
+    // For Single Swipe - Handling a single fast swipe range
+    // eslint-disable-next-line prefer-const
+    let [lowerBound, upperBound, eventCount] = [10, 50, 0];
+    gsap.set(document.body, { overflow: 'hidden' });
+    const currentPath = location.pathname;
+    const index = routes.findIndex((route) => route.path === currentPath);
     /**
      *
      * @param {PointerEvent} event
@@ -280,33 +290,23 @@ const App = () => {
      */
     const handlePointerMove = (event) => {
       if (event.isPrimary === false) return;
+      eventCount += 1;
 
+      totalXMovement = event.clientX - startX.current;
+      console.log({ totalXMovement });
       // if user is selecting text do not register swipe
-      if (window.getSelection().toString().length > 0) return;
+      if (
+        eventCount > 1 &&
+        Math.abs(totalXMovement) <= lowerBound &&
+        window.getSelection().toString().length > 0
+      )
+        return;
 
-      gsap.set(document.body, { overflow: 'hidden' });
-      const currentPath = location.pathname;
-      const index = routes.findIndex((route) => route.path === currentPath);
-      let tempMovement = event.movementX;
       if (event.pointerType === 'touch') {
-        tempMovement *= 10;
-        threshold = 3;
+        threshold = 7;
       }
-      totalXMovement += event.movementX;
-      // setMovePos((prev) => {
-      //   const copy = prev;
-      //   copy.xPos = totalXMovement;
-      //   copy.eventMovX = event.movementX;
-      //   copy.tempMovement = tempMovement;
-      //   return copy;
-      // });
-      let currentMoveAmount = tempMovement;
-      // page boundaries
-      if (totalXMovement > event.pageX) currentMoveAmount = event.pageX / 2;
-      if (totalXMovement < -1 * event.pageX)
-        currentMoveAmount = event.pageX / 2;
 
-      // routes / index boundaries
+      // routes / index boundaries do not allow movement
       if (index === 0 && totalXMovement < 0) {
         totalXMovement = 0;
         return;
@@ -317,56 +317,63 @@ const App = () => {
       }
 
       if (Math.abs(totalXMovement) < threshold) return;
+      if (eventCount === 1) {
+        if (
+          Math.abs(totalXMovement) >= lowerBound &&
+          Math.abs(totalXMovement) <= upperBound
+        )
+          multiplier *= 20;
+      }
+      parentContainer.style.touchAction = 'none';
+      parentContainer.style.userSelect = 'none';
+      parentContainer.style.transition = `transform 0.35s cubic-bezier(0.15, 0.3, 0.25, 1)`;
+      const userMovedRaf = () => {
+        parentContainer.style.transform = `translate3d(${
+          deltaX * multiplier
+        }px, 0px, 0px)`;
+        // once the paint job is done we 'release' animation frame variable to allow next paint job:
+        raf = null;
+      };
+      const userMoved = (e) => {
+        // if no previous request for animation frame - we allow js to proccess 'move' event:
+        if (!raf) {
+          // if (Math.abs(totalXMovement) > threshold * 2.5) {
+          //   cancelAnimationFrame(userMovedRaf);
+          //   // alert(JSON.stringify({ totalXMovement, threshold }, null, 2));
+          //   // parentContainer.style.transform += `scale(0.85)`;
+          //   // parentContainer.style.transform = ``;
+          //   // parentContainer.style.transiton = ``;
+          //   // parentContainer.style.userSelect = '';
+          //   setTimeout(() => {
+          //     // if (totalXMovement > 0) history.push(routes[index + 1].path);
+          //     // if (totalXMovement < 0) history.push(routes[index - 1].path);
+          //   }, 350);
+          //   setTimeout(() => {
+          //     parentContainer.style.transform = ``;
+          //     parentContainer.style.transiton = ``;
+          //     parentContainer.style.userSelect = '';
+          //     parentContainer.style.touchAction = '';
+          //   }, 2000);
+          //   return;
+          // }
+          deltaX = e.clientX - startX.current;
+          raf = requestAnimationFrame(userMovedRaf);
+        }
+      };
 
-      tl.to(parentContainer, {
-        overwrite: 'auto',
-        // userSelect: 'none',
-        // touchAction: 'none',
-        ease: 'power.inOut',
-        duration: 0.05,
-        x: `+=${Math.ceil(currentMoveAmount)}`,
-        // skewX: `+=${Math.ceil(currentMoveAmount)}`,
-        // scale: `+=${-1 * Math.abs(Math.ceil(currentMoveAmount) / 10)}`,
-        onComplete: () => {
-          if (Math.abs(totalXMovement) > threshold * 3) {
-            // allowMove = false;
-
-            tl.to(parentContainer, {
-              x: 0,
-              overwrite: 'auto',
-              skewX: 0,
-              delay: 2,
-              duration: 0,
-              ease: 'none',
-              onComplete: () => {
-                tl.set(parentContainer, { backgroundColor: '' });
-                tl.from(parentContainer, {
-                  duration: 0.3,
-                  ease: 'none',
-                  backgroundColor: 'green',
-                });
-                // setMovePos(initalMovePos);
-              },
-            });
-            if (totalXMovement > 0) history.push(routes[index + 1].path);
-            if (totalXMovement < 0) history.push(routes[index - 1].path);
-          } else {
-            tl.to(parentContainer, {
-              x: 0,
-              skewX: 0,
-              duration: 0.5,
-              ease: 'back',
-              overwrite: 'auto',
-            });
-            // setMovePos(initalMovePos);
-          }
-        },
-      });
+      userMoved(event);
     };
 
     parentContainer.onpointermove = handlePointerMove;
     return () => {
-      // tl.globalTimeline.set(swiperRef.current, { clearProps: 'all' });
+      if (raf) {
+        cancelAnimationFrame(raf);
+        raf = null;
+        parentContainer.style.transform = ``;
+        parentContainer.style.transiton = ``;
+        parentContainer.style.userSelect = '';
+        parentContainer.style.touchAction = '';
+      }
     };
   }, [isMoving]);
 
@@ -374,26 +381,28 @@ const App = () => {
    *
    * @param {PointerEvent} event
    */
-  const handlePointerDown = () => {
+  const handlePointerDown = (event) => {
+    // event.preventDefault();
+    event.stopPropagation();
     // document.querySelector('div').tagName
+    console.log('pointer down');
     setIsMoving(true);
+    startX.current = event.clientX;
   };
 
   const handlePointerUp = (event) => {
-    event.preventDefault();
-    swiperRef.current.onpointermove = null;
-    // gsap.set(swiperRef.current, { clearProps: 'all' });
-    gsap.set(document.body, { clearProps: 'all' });
-    setIsMoving(false);
-  };
+    // event.preventDefault();
+    event.stopPropagation();
 
-  const handlePointerLeave = (event) => {
-    event.preventDefault();
-    swiperRef.current.onpointermove = null;
-    gsap.set(document.body, { clearProps: 'all' });
-
-    // gsap.set(swiperRef.current, { clearProps: 'all' });
-    setIsMoving(false);
+    console.log('pointer up');
+    setTimeout(() => {
+      swiperRef.current.onpointermove = null;
+      swiperRef.current.style.transform = ``;
+      swiperRef.current.style.transiton = ``;
+      swiperRef.current.style.userSelect = '';
+      swiperRef.current.style.touchAction = '';
+      setIsMoving(false);
+    }, 500);
   };
 
   // const [moveEvent, setMoveEvent] = useState(null);
@@ -450,7 +459,7 @@ const App = () => {
         ref={swiperRef}
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
-        onPointerLeave={handlePointerLeave}
+        onPointerCancel={handlePointerUp}
         // onPointerMove={handleMove}
       >
         {/* <Button

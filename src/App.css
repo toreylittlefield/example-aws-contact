@@ -32,6 +32,22 @@ code span {
   font-family: 'IBM Plex Sans', sans-serif;
 }
 
+.page.appear {
+  display: none;
+}
+
+.page.appear-active {
+  display: none;
+}
+
+.page.appear-done {
+  display: none;
+}
+
+.page.enter-active {
+  display: none;
+}
+
 .page-wrapper {
   position: fixed;
   width: 100%;

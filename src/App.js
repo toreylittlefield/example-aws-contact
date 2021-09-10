@@ -29,7 +29,6 @@ const App = () => {
   const matches = useMediaQuery(theme.breakpoints.up('sm'));
 
   // state
-  // const [viewpathIndex, setviewpathIndex] = useState(null);
   const [reverseAnimation, setReverseAnimation] = useState(false);
   const [prevElements, setPrevElements] = useState({
     exitEl: null,
@@ -40,8 +39,8 @@ const App = () => {
   const matchesMemo = useMemo(() => matches, [matches]);
   const moveGsap = matchesMemo ? 'xPercent' : 'yPercent';
   // custom hooks
-  const [viewPathIndex, setViewPathIndex] = useRouterPathIndex(routes, history);
   useRecaptchaCleanup(location);
+  const [viewPathIndex, setViewPathIndex] = useRouterPathIndex(routes, history);
   const [gsapTimingState] = usePageTransitions(
     prevElements,
     reverseAnimation,

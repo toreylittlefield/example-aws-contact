@@ -100,21 +100,18 @@ const App = () => {
       <CustomSwiper routes={routes} history={history} location={location}>
         {routes.map(({ path, component: Component, key }) => (
           <Route key={key} path={path} exact>
-            {({ match }) => {
-              console.count('router rendering');
-              return (
-                <CSSTransition
-                  location={location}
-                  in={match !== null}
-                  timeout={gsapTimingState.totalTime * 250 ?? 4300}
-                  onExit={onExit}
-                  onEnter={onEnter}
-                  unmountOnExit
-                >
-                  <Component to={path === '*' ? '/ExampleOne' : null} />
-                </CSSTransition>
-              );
-            }}
+            {({ match }) => (
+              <CSSTransition
+                location={location}
+                in={match !== null}
+                timeout={gsapTimingState.totalTime * 250 ?? 4300}
+                onExit={onExit}
+                onEnter={onEnter}
+                unmountOnExit
+              >
+                <Component to={path === '*' ? '/ExampleOne' : null} />
+              </CSSTransition>
+            )}
           </Route>
         ))}
       </CustomSwiper>

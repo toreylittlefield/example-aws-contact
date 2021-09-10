@@ -6,8 +6,9 @@ export const Section = ({
   sectionDescription = '',
   ComponentToRender = {},
   codeString = '',
+  id = '',
 }) => (
-  <section className="page">
+  <section id={id} className="page">
     <div className="container">
       <h2>{sectionTitle}</h2>
       <p>{sectionDescription}</p>

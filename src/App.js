@@ -24,6 +24,7 @@ import {
   ExampleFour,
   ExampleFive,
 } from './Pages';
+import { useRecaptchaCleanup } from './Hooks';
 
 const routes = [
   {
@@ -76,6 +77,7 @@ const initGsapTiming = {
 const App = () => {
   const history = useHistory();
   const location = useLocation();
+  useRecaptchaCleanup(location);
   const [viewpathIndex, setviewpathIndex] = useState(null);
   const [gsapTimingState, setGsapTimingState] = useState(initGsapTiming);
   const theme = useTheme();
@@ -92,19 +94,9 @@ const App = () => {
 
   useEffect(() => {
     if (viewpathIndex === null) setviewpathIndex(initialState);
-  }, []);
-
-  useEffect(() => {
     if (history.action === 'POP') {
       setviewpathIndex(initialState);
     }
-    document
-      .querySelectorAll('iframe[title="recaptcha challenge"]', '.page')
-      ?.forEach((element, pathIndex) => {
-        if (pathIndex === 0) return;
-        if (element.tagName === 'IFRAME')
-          return element.parentElement.parentElement.remove();
-      });
   }, [location]);
 
   const handleChange = (event) => {
@@ -114,12 +106,6 @@ const App = () => {
     setviewpathIndex(parseInt(el) ?? viewpathIndex + 1);
   };
 
-  // const handleChangepathIndex = (pathIndex) => {
-  //   if (pathIndex >= routes.length) return;
-  //   const pathTo = routes[pathIndex].path;
-  //   setviewpathIndex(pathIndex);
-  //   history.push(pathTo);
-  // };
   const [reverseAnimation, setReverseAnimation] = useState(false);
   const [prevElements, setPrevElements] = useState({
     exitEl: null,

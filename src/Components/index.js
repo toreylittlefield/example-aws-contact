@@ -7,3 +7,4 @@ export * from './ReactCodeBlock';
 export * from './NavBar';
 export * from './CustomSwiper';
 export * from './IntroAnimation';
+export * from './PageWrapper';

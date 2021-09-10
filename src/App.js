@@ -10,7 +10,12 @@ import {
   wrapperAnimation,
 } from './Animations/pageTransitions';
 
-import { CustomSwiper, NavBar, IntroAnimation } from './Components';
+import {
+  CustomSwiper,
+  NavBar,
+  IntroAnimation,
+  PageWrapper,
+} from './Components';
 
 import {
   ExampleOne,
@@ -249,12 +254,8 @@ const App = () => {
   return (
     <div className="App">
       <IntroAnimation />
+      <PageWrapper />
       <NavBar handleChange={handleChange} />
-      <div className="page-wrapper">
-        <div className="curtain" />
-        <div className="curtain" />
-        <div className="curtain" />
-      </div>
       <CustomSwiper routes={routes} history={history} location={location}>
         {routes.map(({ path, component: Component, key }) => (
           <Route key={key} path={path} exact>

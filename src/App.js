@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import './App.css';
 import { Transition } from 'react-transition-group';
 import { useMediaQuery, useTheme } from '@material-ui/core';
-import { Route, Redirect, useHistory, useLocation } from 'react-router-dom';
+import { Route, useHistory, useLocation } from 'react-router-dom';
 
 import {
   CustomSwiper,
@@ -11,54 +11,10 @@ import {
   PageWrapper,
 } from './Components';
 
-import {
-  ExampleOne,
-  ExampleTwo,
-  ExampleThree,
-  ExampleFour,
-  ExampleFive,
-} from './Pages';
 import { useRecaptchaCleanup } from './Hooks';
 import { usePageTransitions } from './Hooks/usePageTransitions';
 
-const routes = [
-  {
-    path: '/ExampleOne',
-    component: ExampleOne,
-    key: 'ExampleOne',
-    exact: true,
-  },
-  {
-    path: '/ExampleTwo',
-    component: ExampleTwo,
-    key: 'ExampleTwo',
-    exact: true,
-  },
-  {
-    path: '/ExampleThree',
-    component: ExampleThree,
-    key: 'ExampleThree',
-    exact: true,
-  },
-  {
-    path: '/ExampleFour',
-    component: ExampleFour,
-    key: 'ExampleFour',
-    exact: true,
-  },
-  {
-    path: '/ExampleFive',
-    component: ExampleFive,
-    key: 'ExampleFive',
-    exact: true,
-  },
-  {
-    path: '*',
-    component: Redirect,
-    key: 'router-redirect-key',
-    exact: false,
-  },
-];
+import routes from './Routes/routes';
 
 const App = () => {
   const history = useHistory();

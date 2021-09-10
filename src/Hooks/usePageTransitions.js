@@ -37,7 +37,6 @@ export const usePageTransitions = (
           prevElements.exitEl;
         const [pageWrapper, curtain] = prevElements.wrapper;
         if (reverseAnimation) {
-          gsap.set(node, { display: 'none' });
           tl.add(
             enterAnimation(
               node,
@@ -74,6 +73,7 @@ export const usePageTransitions = (
         if (prevElements.enterEl === null) return;
         const { elementsToAnimate, firstChild, secondChild, node } =
           prevElements.enterEl;
+        node.style.display = 'none';
         if (reverseAnimation) {
           tl.add(
             exitAnimation(
@@ -97,7 +97,7 @@ export const usePageTransitions = (
           );
         }
       };
-      await runExitAni();
+      runExitAni();
       runEnterAni();
     };
     wrapper();

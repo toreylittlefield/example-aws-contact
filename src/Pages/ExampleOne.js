@@ -4,6 +4,7 @@ import { Section } from '../Components/Section';
 
 const ExampleOne = () => (
   <Section
+    id="example-one"
     sectionTitle="Formik Example With Yup"
     sectionDescription="All the formik boilerplate stuff example"
     ComponentToRender={ContactForm}

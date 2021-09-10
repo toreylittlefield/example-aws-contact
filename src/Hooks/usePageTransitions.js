@@ -15,16 +15,13 @@ const initGsapTiming = {
   totalTime: 0,
 };
 
-export const usePageTransitions = (
-  prevElements,
-  reverseAnimation,
-  moveGsap
-) => {
+export const usePageTransitions = (prevElements, moveGsap) => {
   // page transitions animation with gsap
   const [gsapTimingState, setGsapTimingState] = useState(initGsapTiming);
+  const [reverseAnimation, setReverseAnimation] = useState(null);
 
   useEffect(() => {
-    if (prevElements.enterEl === null) return;
+    if (prevElements.enterEl === null || reverseAnimation === null) return;
 
     const tl = gsap.timeline({
       autoRemoveChildren: true,
@@ -105,11 +102,10 @@ export const usePageTransitions = (
     return () => {
       if (tl) {
         if (prevElements.exitEl === null) return;
-
         tl.reversed(true).then(() => tl.kill());
       }
     };
   }, [reverseAnimation]);
 
-  return [gsapTimingState];
+  return [gsapTimingState, setReverseAnimation];
 };

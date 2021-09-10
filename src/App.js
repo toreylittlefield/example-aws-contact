@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react';
+/* eslint-disable no-unused-vars */
+import { useMemo, useRef } from 'react';
 import './App.css';
-import { Transition } from 'react-transition-group';
+import { CSSTransition } from 'react-transition-group';
 import { useMediaQuery, useTheme } from '@material-ui/core';
 import { Route, useHistory, useLocation } from 'react-router-dom';
 
@@ -28,9 +29,8 @@ const App = () => {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up('sm'));
 
-  // state
-  const [reverseAnimation, setReverseAnimation] = useState(false);
-  const [prevElements, setPrevElements] = useState({
+  // refs to pass to our page transitions
+  const prevElements = useRef({
     exitEl: null,
     enterEl: null,
     wrapper: null,
@@ -41,9 +41,8 @@ const App = () => {
   // custom hooks
   useRecaptchaCleanup(location);
   const [viewPathIndex, setViewPathIndex] = useRouterPathIndex(routes, history);
-  const [gsapTimingState] = usePageTransitions(
-    prevElements,
-    reverseAnimation,
+  const [gsapTimingState, setReverseAnimation] = usePageTransitions(
+    prevElements.current,
     moveGsap
   );
 
@@ -63,12 +62,13 @@ const App = () => {
     const elementsToAnimate = !matchesMemo
       ? [firstChild, secondChild.children]
       : [firstChild.children, secondChild, secondChild.children];
-    setPrevElements((prev) => {
-      const copy = prev;
-      copy.exitEl = { elementsToAnimate, node, firstChild, secondChild };
-      copy.wrapper = [pageWrapper, curtain];
-      return copy;
-    });
+    prevElements.current.exitEl = {
+      elementsToAnimate,
+      node,
+      firstChild,
+      secondChild,
+    };
+    prevElements.current.wrapper = [pageWrapper, curtain];
   };
 
   // entering element (called after exited element)
@@ -80,12 +80,16 @@ const App = () => {
     const elementsToAnimate = !matchesMemo
       ? [firstChild, secondChild.children]
       : [firstChild.children, secondChild, secondChild.children];
-    setPrevElements((prev) => {
-      const copy = prev;
-      copy.enterEl = { elementsToAnimate, firstChild, secondChild, node };
-      return copy;
+    prevElements.current.enterEl = {
+      elementsToAnimate,
+      firstChild,
+      secondChild,
+      node,
+    };
+    setReverseAnimation((prev) => {
+      if (prev === null) return false;
+      return !prev;
     });
-    setReverseAnimation((prev) => !prev);
   };
 
   return (
@@ -96,17 +100,21 @@ const App = () => {
       <CustomSwiper routes={routes} history={history} location={location}>
         {routes.map(({ path, component: Component, key }) => (
           <Route key={key} path={path} exact>
-            {({ match }) => (
-              <Transition
-                in={match !== null}
-                timeout={gsapTimingState.totalTime * 250 ?? 4300}
-                onExit={onExit}
-                onEnter={onEnter}
-                unmountOnExit
-              >
-                <Component to={path === '*' ? '/ExampleOne' : null} />
-              </Transition>
-            )}
+            {({ match }) => {
+              console.count('router rendering');
+              return (
+                <CSSTransition
+                  location={location}
+                  in={match !== null}
+                  timeout={gsapTimingState.totalTime * 250 ?? 4300}
+                  onExit={onExit}
+                  onEnter={onEnter}
+                  unmountOnExit
+                >
+                  <Component to={path === '*' ? '/ExampleOne' : null} />
+                </CSSTransition>
+              );
+            }}
           </Route>
         ))}
       </CustomSwiper>

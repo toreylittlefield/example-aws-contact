@@ -5,3 +5,4 @@ export * from './ContactFormWithUseFieldHook';
 export * from './ContactFormWithUseFieldHookMui';
 export * from './ReactCodeBlock';
 export * from './NavBar';
+export * from './CustomSwiper';

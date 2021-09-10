@@ -20,8 +20,6 @@ module.exports = {
     ecmaVersion: 12,
   },
   rules: {
-    'no-console': 0,
-    'no-alert': 0,
     'no-nested-ternary': 0,
     'import/prefer-default-export': 0,
     'react/forbid-prop-types': 0,

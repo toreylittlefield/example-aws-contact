@@ -25,7 +25,6 @@ export const CustomSwiper = ({ history, location, routes, children }) => {
   };
 
   const handlePointerUp = (event) => {
-    console.count('p up');
     event?.stopPropagation();
     setTimeout(() => {
       swiperRef.current.onpointermove = null;
@@ -64,8 +63,6 @@ export const CustomSwiper = ({ history, location, routes, children }) => {
       if (Math.abs(event.movementY) > Math.abs(event.movementX)) return;
 
       eventCount += 1;
-
-      console.log({ event });
 
       totalXMovement = event.clientX - startingPos.current.startX;
       // if user is selecting text do not register swipe
@@ -134,9 +131,6 @@ export const CustomSwiper = ({ history, location, routes, children }) => {
       setStyles(parentContainer, { init: true });
 
       const userMovedRaf = () => {
-        console.log({ totalXMovement });
-        console.log(transitionPageThreshold);
-        console.log(deltaX * multiplier);
         if (Math.abs(totalXMovement) > transitionPageThreshold) return;
         let moveAmount = deltaX * multiplier;
         if (moveAmount >= animationLimit) moveAmount = animationLimit;

@@ -6,3 +6,4 @@ export * from './ContactFormWithUseFieldHookMui';
 export * from './ReactCodeBlock';
 export * from './NavBar';
 export * from './CustomSwiper';
+export * from './IntroAnimation';

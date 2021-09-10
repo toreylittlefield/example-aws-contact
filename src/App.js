@@ -1,17 +1,16 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import './App.css';
 import { Transition } from 'react-transition-group';
 import { gsap } from 'gsap';
-import { Button, useMediaQuery, useTheme } from '@material-ui/core';
+import { useMediaQuery, useTheme } from '@material-ui/core';
 import { Route, Redirect, useHistory, useLocation } from 'react-router-dom';
 import {
   enterAnimation,
   exitAnimation,
   wrapperAnimation,
-  onStartWrapper,
 } from './Animations/pageTransitions';
 
-import { CustomSwiper, NavBar } from './Components';
+import { CustomSwiper, NavBar, IntroAnimation } from './Components';
 
 import {
   ExampleOne,
@@ -77,7 +76,6 @@ const App = () => {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up('sm'));
   const matchesMemo = useMemo(() => matches, [matches]);
-  const introTimeline = useRef(null);
 
   const initialState = () => {
     const pathOnLoad = history.location.pathname;
@@ -87,19 +85,8 @@ const App = () => {
     return initpathIndex === -1 ? 0 : initpathIndex;
   };
 
-  const [isIntroAniRunning, setIsIntroAniRunning] = useState(null);
-
   useEffect(() => {
     if (viewpathIndex === null) setviewpathIndex(initialState);
-    if (isIntroAniRunning === false || isIntroAniRunning) return;
-    setIsIntroAniRunning(true);
-    introTimeline.current = gsap.globalTimeline;
-    introTimeline.current.add(
-      'start',
-      onStartWrapper('.page-wrapper', '.curtain').then(() =>
-        setIsIntroAniRunning(false)
-      )
-    );
   }, []);
 
   useEffect(() => {
@@ -120,11 +107,6 @@ const App = () => {
       event.target.parentElement.getAttribute('datapathIndex') ??
       event.target.getAttribute('datapathIndex');
     setviewpathIndex(parseInt(el) ?? viewpathIndex + 1);
-  };
-
-  const handleSkipIntro = () => {
-    setIsIntroAniRunning(false);
-    introTimeline.current.totalProgress(0.9);
   };
 
   // const handleChangepathIndex = (pathIndex) => {
@@ -266,17 +248,7 @@ const App = () => {
 
   return (
     <div className="App">
-      <div id="intro-text"> </div>
-      {isIntroAniRunning && (
-        <Button
-          onClick={handleSkipIntro}
-          variant="outlined"
-          color="primary"
-          id="btn-skip-intro"
-        >
-          Skip Intro
-        </Button>
-      )}
+      <IntroAnimation />
       <NavBar handleChange={handleChange} />
       <div className="page-wrapper">
         <div className="curtain" />

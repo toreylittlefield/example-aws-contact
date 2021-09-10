@@ -1,14 +1,8 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import './App.css';
 import { Transition } from 'react-transition-group';
-import { gsap } from 'gsap';
 import { useMediaQuery, useTheme } from '@material-ui/core';
 import { Route, Redirect, useHistory, useLocation } from 'react-router-dom';
-import {
-  enterAnimation,
-  exitAnimation,
-  wrapperAnimation,
-} from './Animations/pageTransitions';
 
 import {
   CustomSwiper,
@@ -25,6 +19,7 @@ import {
   ExampleFive,
 } from './Pages';
 import { useRecaptchaCleanup } from './Hooks';
+import { usePageTransitions } from './Hooks/usePageTransitions';
 
 const routes = [
   {
@@ -65,37 +60,27 @@ const routes = [
   },
 ];
 
-/**
- * @description exit occurs first in the transition
- */
-const initGsapTiming = {
-  duration: 0.6,
-  stagger: 0.6,
-  totalTime: 0,
-};
-
 const App = () => {
   const history = useHistory();
   const location = useLocation();
   useRecaptchaCleanup(location);
   const [viewpathIndex, setviewpathIndex] = useState(null);
-  const [gsapTimingState, setGsapTimingState] = useState(initGsapTiming);
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up('sm'));
   const matchesMemo = useMemo(() => matches, [matches]);
 
-  const initialState = () => {
+  const getRouterPathIndex = useCallback(() => {
     const pathOnLoad = history.location.pathname;
     const initpathIndex = routes.findIndex(
       (route) => route.path === pathOnLoad
     );
     return initpathIndex === -1 ? 0 : initpathIndex;
-  };
+  }, []);
 
   useEffect(() => {
-    if (viewpathIndex === null) setviewpathIndex(initialState);
+    if (viewpathIndex === null) setviewpathIndex(getRouterPathIndex);
     if (history.action === 'POP') {
-      setviewpathIndex(initialState);
+      setviewpathIndex(getRouterPathIndex);
     }
   }, [location]);
 
@@ -106,7 +91,6 @@ const App = () => {
     setviewpathIndex(parseInt(el) ?? viewpathIndex + 1);
   };
 
-  const [reverseAnimation, setReverseAnimation] = useState(false);
   const [prevElements, setPrevElements] = useState({
     exitEl: null,
     enterEl: null,
@@ -114,95 +98,7 @@ const App = () => {
   });
 
   const moveGsap = matchesMemo ? 'xPercent' : 'yPercent';
-
-  // page transitions animation with gsap
-  useEffect(() => {
-    if (prevElements.enterEl === null) return;
-
-    const tl = gsap.timeline({
-      autoRemoveChildren: true,
-      defaults: { overwrite: 'auto' },
-    });
-    const wrapper = async () => {
-      const runExitAni = () => {
-        if (prevElements.exitEl === null) return;
-        const { elementsToAnimate, node, firstChild, secondChild } =
-          prevElements.exitEl;
-        const [pageWrapper, curtain] = prevElements.wrapper;
-        if (reverseAnimation) {
-          gsap.set(node, { display: 'none' });
-          tl.add(
-            enterAnimation(
-              node,
-              firstChild,
-              secondChild,
-              tl,
-              moveGsap,
-              gsapTimingState
-            ).reverse()
-          ).addLabel('exit', '<');
-          tl.add(wrapperAnimation(pageWrapper, curtain).reverse()).addLabel(
-            'wrapper',
-            '<'
-          );
-        } else {
-          tl.add(
-            exitAnimation(elementsToAnimate, gsapTimingState, moveGsap)
-          ).addLabel('exit', '<');
-          tl.add(wrapperAnimation(pageWrapper, curtain), '<0.3').addLabel(
-            'wrapper',
-            '<'
-          );
-        }
-        // set the totalTime duration of the animation
-        if (gsapTimingState.totalTime === 0) {
-          setGsapTimingState((prev) => {
-            const copyState = prev;
-            copyState.totalTime = tl.duration();
-            return copyState;
-          });
-        }
-      };
-      const runEnterAni = () => {
-        if (prevElements.enterEl === null) return;
-        const { elementsToAnimate, firstChild, secondChild, node } =
-          prevElements.enterEl;
-        if (reverseAnimation) {
-          tl.add(
-            exitAnimation(
-              elementsToAnimate,
-              gsapTimingState,
-              moveGsap,
-              true,
-              node
-            ).addLabel('enter', '<')
-          );
-        } else {
-          tl.add(
-            enterAnimation(
-              node,
-              firstChild,
-              secondChild,
-              tl,
-              moveGsap,
-              gsapTimingState
-            ).addLabel('enter', '<')
-          );
-        }
-      };
-      await runExitAni();
-      runEnterAni();
-    };
-    wrapper();
-
-    return () => {
-      if (tl) {
-        if (prevElements.exitEl === null) return;
-
-        tl.reversed(true).then(() => tl.kill());
-      }
-    };
-  }, [reverseAnimation]);
+  const [reverseAnimation, setReverseAnimation] = useState(false);
 
   // exiting element
   const onExit = (node) => {
@@ -224,7 +120,8 @@ const App = () => {
   // entering element (called after exited element)
   const onEnter = (node) => {
     if (!node) return;
-    gsap.set(node, { display: 'none' });
+    const copyNode = node;
+    copyNode.style.display = 'none';
     const [firstChild, secondChild] = node.children;
     const elementsToAnimate = !matchesMemo
       ? [firstChild, secondChild.children]
@@ -236,6 +133,12 @@ const App = () => {
     });
     setReverseAnimation((prev) => !prev);
   };
+
+  const [gsapTimingState] = usePageTransitions(
+    prevElements,
+    reverseAnimation,
+    moveGsap
+  );
 
   return (
     <div className="App">

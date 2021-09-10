@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useMemo } from 'react';
 import './App.css';
 import { Transition } from 'react-transition-group';
 import { useMediaQuery, useTheme } from '@material-ui/core';
@@ -11,50 +11,49 @@ import {
   PageWrapper,
 } from './Components';
 
-import { useRecaptchaCleanup } from './Hooks';
-import { usePageTransitions } from './Hooks/usePageTransitions';
+import {
+  useRecaptchaCleanup,
+  usePageTransitions,
+  useRouterPathIndex,
+} from './Hooks';
 
 import routes from './Routes/routes';
 
 const App = () => {
+  // router hooks
   const history = useHistory();
   const location = useLocation();
-  useRecaptchaCleanup(location);
-  const [viewpathIndex, setviewpathIndex] = useState(null);
+
+  // mui hooks
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up('sm'));
-  const matchesMemo = useMemo(() => matches, [matches]);
 
-  const getRouterPathIndex = useCallback(() => {
-    const pathOnLoad = history.location.pathname;
-    const initpathIndex = routes.findIndex(
-      (route) => route.path === pathOnLoad
-    );
-    return initpathIndex === -1 ? 0 : initpathIndex;
-  }, []);
-
-  useEffect(() => {
-    if (viewpathIndex === null) setviewpathIndex(getRouterPathIndex);
-    if (history.action === 'POP') {
-      setviewpathIndex(getRouterPathIndex);
-    }
-  }, [location]);
-
-  const handleChange = (event) => {
-    const el =
-      event.target.parentElement.getAttribute('datapathIndex') ??
-      event.target.getAttribute('datapathIndex');
-    setviewpathIndex(parseInt(el) ?? viewpathIndex + 1);
-  };
-
+  // state
+  // const [viewpathIndex, setviewpathIndex] = useState(null);
+  const [reverseAnimation, setReverseAnimation] = useState(false);
   const [prevElements, setPrevElements] = useState({
     exitEl: null,
     enterEl: null,
     wrapper: null,
   });
 
+  const matchesMemo = useMemo(() => matches, [matches]);
   const moveGsap = matchesMemo ? 'xPercent' : 'yPercent';
-  const [reverseAnimation, setReverseAnimation] = useState(false);
+  // custom hooks
+  const [viewPathIndex, setViewPathIndex] = useRouterPathIndex(routes, history);
+  useRecaptchaCleanup(location);
+  const [gsapTimingState] = usePageTransitions(
+    prevElements,
+    reverseAnimation,
+    moveGsap
+  );
+
+  const handleChange = (event) => {
+    const el =
+      event.target.parentElement.getAttribute('datapathIndex') ??
+      event.target.getAttribute('datapathIndex');
+    setViewPathIndex(parseInt(el) ?? viewPathIndex + 1);
+  };
 
   // exiting element
   const onExit = (node) => {
@@ -89,12 +88,6 @@ const App = () => {
     });
     setReverseAnimation((prev) => !prev);
   };
-
-  const [gsapTimingState] = usePageTransitions(
-    prevElements,
-    reverseAnimation,
-    moveGsap
-  );
 
   return (
     <div className="App">

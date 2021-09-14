@@ -5,6 +5,7 @@ import {
   ExampleThree,
   ExampleFour,
   ExampleFive,
+  ExampleSix,
 } from '../Pages';
 
 const routes = [
@@ -36,6 +37,12 @@ const routes = [
     path: '/ExampleFive',
     component: ExampleFive,
     key: 'ExampleFive',
+    exact: true,
+  },
+  {
+    path: '/ExampleSix',
+    component: ExampleSix,
+    key: 'ExampleSix',
     exact: true,
   },
   {

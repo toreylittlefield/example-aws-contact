@@ -61,6 +61,13 @@ export const NavBar = ({ handleChange }) => {
           component={NavLink}
           label="Example 5: Material UI"
         />
+        <Tab
+          to="/ExampleSix"
+          value="/ExampleSix"
+          dataindex={5}
+          component={NavLink}
+          label="Example 6: Send To AWS"
+        />
       </Tabs>
     </AppBar>
   );

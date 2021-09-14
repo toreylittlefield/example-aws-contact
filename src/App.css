@@ -24,6 +24,34 @@ section {
   place-content: center;
 }
 
+.contact-form.live {
+  width: 100%;
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-template-columns: 1fr 1fr;
+  row-gap: 10px;
+}
+
+.contact-form.live .form-message {
+  grid-column: 1 / span 2;
+  width: 69ch;
+}
+
+.form-email {
+  grid-column: 1 / span 2;
+  width: 55ch;
+}
+
+.contact-form.live button {
+  grid-column: 1;
+  width: max-content;
+}
+
+.recaptcha-component {
+  /* place-self: center; */
+  grid-column: 1;
+}
+
 pre {
   height: 400px;
 }

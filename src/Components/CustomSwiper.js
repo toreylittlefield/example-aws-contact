@@ -30,6 +30,7 @@ export const CustomSwiper = ({ history, location, routes, children }) => {
       swiperRef.current.onpointermove = null;
       if (willTransition === false) {
         resetStyles(swiperRef.current);
+        document.body.style.overflow = '';
       }
       setIsPointerDown(false);
     }, 350);

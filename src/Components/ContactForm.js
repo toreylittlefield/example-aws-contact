@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 import React, { useRef } from 'react';
 import { useFormik } from 'formik';
 import ReCAPTCHA from 'react-google-recaptcha';

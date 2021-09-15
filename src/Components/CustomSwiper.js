@@ -17,15 +17,15 @@ export const CustomSwiper = ({ history, location, routes, children }) => {
    * @param {PointerEvent} event
    */
   const handlePointerDown = (event) => {
-    event.stopPropagation();
+    // event.stopPropagation();
     if (event.isPrimary === false) return;
     if (event.movementY > event.movementX) return;
     setIsPointerDown(true);
     startingPos.current = { startX: event.clientX, startY: event.clientY };
   };
 
-  const handlePointerUp = (event) => {
-    event?.stopPropagation();
+  const handlePointerUp = () => {
+    // event?.stopPropagation();
     setTimeout(() => {
       swiperRef.current.onpointermove = null;
       if (willTransition === false) {

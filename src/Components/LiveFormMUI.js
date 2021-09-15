@@ -135,6 +135,7 @@ export const LiveFormMUI = () => {
             name="firstName"
             type="text"
             label="First Name"
+            className="first-name"
             required
             helperText={<ErrorMessage name="firstName" />}
             error={errors.firstName && touched.firstName}
@@ -148,20 +149,19 @@ export const LiveFormMUI = () => {
                 </InputAdornment>
               ),
             }}
-            style={{ width: '29ch' }}
           />
 
           <Field
             name="lastName"
             type="text"
             label="Last Name"
+            className="last-name"
             required
             helperText={<ErrorMessage name="lastName" />}
             error={errors.lastName && touched.lastName}
             placeholder="Hannock"
             as={TextField}
             variant="outlined"
-            style={{ width: '29ch' }}
           />
 
           <Field

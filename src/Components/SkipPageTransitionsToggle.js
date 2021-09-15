@@ -14,9 +14,10 @@ export const SkipPageTransitionsToggle = ({ state, setState }) => {
 
   return (
     <FormControlLabel
-      className="page-animations-switch"
+      id="page-animation-switch"
       control={<Switch checked={checked} onChange={toggleChecked} />}
       label={labelText}
+      labelPlacement="bottom"
     />
   );
 };

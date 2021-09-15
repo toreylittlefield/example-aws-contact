@@ -17,15 +17,16 @@ export const CustomSwiper = ({ history, location, routes, children }) => {
    * @param {PointerEvent} event
    */
   const handlePointerDown = (event) => {
-    // event.stopPropagation();
+    event?.stopPropagation();
+    console.log('down', event);
     if (event.isPrimary === false) return;
-    if (event.movementY > event.movementX) return;
     setIsPointerDown(true);
     startingPos.current = { startX: event.clientX, startY: event.clientY };
   };
 
-  const handlePointerUp = () => {
-    // event?.stopPropagation();
+  const handlePointerUp = (event) => {
+    console.log('handle up', event);
+    event?.stopPropagation();
     setTimeout(() => {
       swiperRef.current.onpointermove = null;
       if (willTransition === false) {
@@ -39,8 +40,9 @@ export const CustomSwiper = ({ history, location, routes, children }) => {
   useEffect(() => {
     if (isPointerDown === false) return;
     const parentContainer = swiperRef.current;
+    let isSelectingText = false;
     let totalXMovement = 0;
-    let threshold = 90;
+    let threshold = 600;
     let deltaX = 0;
     let raf;
     let multiplier = 1;
@@ -51,8 +53,7 @@ export const CustomSwiper = ({ history, location, routes, children }) => {
     const animationLimit = transitionPageThreshold * 1.5;
     // For Single Swipe - Handling a single fast swipe range
     // eslint-disable-next-line prefer-const
-    let [lowerBound, upperBound, eventCount] = [7, 30, 0];
-    document.body.style.overflow = 'hidden';
+    let [lowerBound, upperBound, eventCount] = [50, 30, 0];
     const currentPath = location.pathname;
     const pathIndex = routes.findIndex((route) => route.path === currentPath);
     /**
@@ -61,17 +62,23 @@ export const CustomSwiper = ({ history, location, routes, children }) => {
      * @returns
      */
     const handlePointerMove = (event) => {
-      if (Math.abs(event.movementY) > Math.abs(event.movementX)) return;
+      // console.log('move', event);
+      if (isSelectingText) {
+        console.log(isSelectingText);
+      }
+      if (isSelectingText) swiperRef.current.onpointermove = null;
+      if (Math.abs(event.movementY) >= Math.abs(event.movementX)) return;
 
       eventCount += 1;
 
       totalXMovement = event.clientX - startingPos.current.startX;
       // if user is selecting text do not register swipe
       if (
-        eventCount > 1 &&
+        eventCount > 0 &&
         Math.abs(totalXMovement) <= lowerBound &&
         window.getSelection().toString().length > 0
       ) {
+        isSelectingText = true;
         handlePointerUp();
         return;
       }
@@ -103,7 +110,12 @@ export const CustomSwiper = ({ history, location, routes, children }) => {
       if (!withInBounds) return;
 
       // animate only if passed our threshold
-      if (Math.abs(totalXMovement) < threshold && eventCount === 1) return;
+      console.log('total', totalXMovement, 'thres', threshold);
+      if (
+        Math.abs(totalXMovement) < threshold &&
+        (eventCount === 1 || eventCount === 2)
+      )
+        return;
 
       if (eventCount === 1) {
         if (
@@ -118,6 +130,7 @@ export const CustomSwiper = ({ history, location, routes, children }) => {
       const setStyles = (element, { init = false, animate: value }) => {
         const el = element;
         if (init) {
+          document.body.style.overflow = 'hidden';
           el.style.touchAction = 'none';
           el.style.userSelect = 'none';
           el.style.transition = `transform .65s cubic-bezier(0.15, 0.3, 0.25, 1)`;

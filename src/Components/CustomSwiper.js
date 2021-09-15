@@ -18,14 +18,12 @@ export const CustomSwiper = ({ history, location, routes, children }) => {
    */
   const handlePointerDown = (event) => {
     event?.stopPropagation();
-    console.log('down', event);
     if (event.isPrimary === false) return;
     setIsPointerDown(true);
     startingPos.current = { startX: event.clientX, startY: event.clientY };
   };
 
   const handlePointerUp = (event) => {
-    console.log('handle up', event);
     event?.stopPropagation();
     setTimeout(() => {
       swiperRef.current.onpointermove = null;
@@ -62,12 +60,9 @@ export const CustomSwiper = ({ history, location, routes, children }) => {
      * @returns
      */
     const handlePointerMove = (event) => {
-      // console.log('move', event);
-      if (isSelectingText) {
-        console.log(isSelectingText);
-      }
       if (isSelectingText) swiperRef.current.onpointermove = null;
       if (Math.abs(event.movementY) >= Math.abs(event.movementX)) return;
+      if (event.pointerType === 'touch') lowerBound = 7;
 
       eventCount += 1;
 
@@ -109,13 +104,7 @@ export const CustomSwiper = ({ history, location, routes, children }) => {
       totalXMovement = boundaryValue;
       if (!withInBounds) return;
 
-      // animate only if passed our threshold
-      console.log('total', totalXMovement, 'thres', threshold);
-      if (
-        Math.abs(totalXMovement) < threshold &&
-        (eventCount === 1 || eventCount === 2)
-      )
-        return;
+      if (Math.abs(totalXMovement) < threshold && eventCount === 1) return;
 
       if (eventCount === 1) {
         if (

@@ -98,12 +98,12 @@ const App = () => {
   return (
     <div className="App">
       <IntroAnimation />
+      <PageWrapper />
+      <NavBar handleChange={handleChange} />
       <SkipPageTransitionsToggle
         state={reverseAnimation}
         setState={setReverseAnimation}
       />
-      <PageWrapper />
-      <NavBar handleChange={handleChange} />
       <CustomSwiper routes={routes} history={history} location={location}>
         {routes.map(({ path, component: Component, key }) => (
           <Route key={key} path={path} exact>

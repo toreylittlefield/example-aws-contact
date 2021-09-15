@@ -15,7 +15,6 @@ section {
 }
 
 .container {
-  display: grid;
   padding: 0 23px;
 }
 
@@ -32,14 +31,47 @@ section {
   row-gap: 10px;
 }
 
+@media only screen and (max-width: 80em) {
+  .contact-form.live {
+    grid-template-columns: 1fr;
+  }
+}
+
+.first-name,
+.last-name {
+  width: 29ch;
+}
+
+@media only screen and (max-width: 80em) {
+  .first-name,
+  .last-name {
+    width: 100%;
+    grid-column: 1;
+  }
+}
+
 .contact-form.live .form-message {
   grid-column: 1 / span 2;
   width: 69ch;
 }
 
+@media only screen and (max-width: 80em) {
+  .contact-form.live .form-message {
+    width: 100%;
+    grid-column: 1;
+  }
+}
+
 .form-email {
-  grid-column: 1 / span 2;
   width: 55ch;
+  grid-column: 1 / span 2;
+}
+
+@media only screen and (max-width: 80em) {
+  .form-email {
+    width: 100%;
+    grid-column: 1;
+  }
 }
 
 .contact-form.live button {
@@ -49,7 +81,21 @@ section {
 
 .recaptcha-component {
   /* place-self: center; */
-  grid-column: 1;
+  /* grid-column: 1; */
+}
+
+#page-animation-switch {
+  display: grid;
+  place-items: baseline;
+  margin: 0 1em;
+  padding: 0 1em;
+}
+
+@media only screen and (max-width: 40em) {
+  #page-animation-switch {
+    margin: 0 0.5em;
+    padding: 0 1em;
+  }
 }
 
 pre {

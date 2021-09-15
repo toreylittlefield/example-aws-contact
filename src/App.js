@@ -10,6 +10,7 @@ import {
   NavBar,
   IntroAnimation,
   PageWrapper,
+  SkipPageTransitionsToggle,
 } from './Components';
 
 import {
@@ -41,10 +42,8 @@ const App = () => {
   // custom hooks
   useRecaptchaCleanup(location);
   const [viewPathIndex, setViewPathIndex] = useRouterPathIndex(routes, history);
-  const [gsapTimingState, setReverseAnimation] = usePageTransitions(
-    prevElements.current,
-    moveGsap
-  );
+  const [gsapTimingState, reverseAnimation, setReverseAnimation] =
+    usePageTransitions(prevElements.current, moveGsap);
 
   const handleChange = (event) => {
     const el =
@@ -52,6 +51,11 @@ const App = () => {
       event.target.getAttribute('datapathIndex');
     setViewPathIndex(parseInt(el) ?? viewPathIndex + 1);
   };
+
+  const handleTransitionTimeOut =
+    reverseAnimation === undefined
+      ? 0
+      : gsapTimingState.totalTime * 250 ?? 4300;
 
   // exiting element
   const onExit = (node) => {
@@ -74,8 +78,6 @@ const App = () => {
   // entering element (called after exited element)
   const onEnter = (node) => {
     if (!node) return;
-    const copyNode = node;
-    copyNode.style.display = 'none';
     const [firstChild, secondChild] = node.children;
     const elementsToAnimate = !matchesMemo
       ? [firstChild, secondChild.children]
@@ -86,6 +88,7 @@ const App = () => {
       secondChild,
       node,
     };
+    if (reverseAnimation === undefined) return;
     setReverseAnimation((prev) => {
       if (prev === null) return false;
       return !prev;
@@ -95,6 +98,10 @@ const App = () => {
   return (
     <div className="App">
       <IntroAnimation />
+      <SkipPageTransitionsToggle
+        state={reverseAnimation}
+        setState={setReverseAnimation}
+      />
       <PageWrapper />
       <NavBar handleChange={handleChange} />
       <CustomSwiper routes={routes} history={history} location={location}>
@@ -104,7 +111,7 @@ const App = () => {
               <CSSTransition
                 location={location}
                 in={match !== null}
-                timeout={gsapTimingState.totalTime * 250 ?? 4300}
+                timeout={handleTransitionTimeOut}
                 onExit={onExit}
                 onEnter={onEnter}
                 unmountOnExit

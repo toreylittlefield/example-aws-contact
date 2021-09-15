@@ -61,8 +61,6 @@ const RecaptchaComponent = ({ children, reCaptchaRef, ...props }) => {
         {...props}
         className="recaptcha-component"
         size="normal"
-        // theme="dark"
-        style={{ width: '100%' }}
         ref={reCaptchaRef}
         sitekey={TEST_SITE_KEY}
         id="recaptcha"
@@ -72,18 +70,6 @@ const RecaptchaComponent = ({ children, reCaptchaRef, ...props }) => {
         }}
       />
       {meta.touched && meta.error && <ErrorMessage name="recaptcha" />}
-      {/* {meta.touched && meta.error ? (
-        <ErrorMessage name="recaptcha" />
-      ) : field.value ? (
-        <TextareaAutosize
-          minRows={3}
-          maxRows={5}
-          aria-label="empty textarea"
-          placeholder="Empty"
-        >
-          {field.value}
-        </TextareaAutosize>
-      ) : null} */}
     </>
   );
 };

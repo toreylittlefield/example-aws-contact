@@ -1,15 +1,9 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable react/jsx-boolean-value */
 import React, { useRef, useEffect, useState } from 'react';
 import { Formik, Field, Form, ErrorMessage, useField } from 'formik';
 import ReCAPTCHA from 'react-google-recaptcha';
 import * as Yup from 'yup';
-import {
-  Button,
-  TextField,
-  TextareaAutosize,
-  InputAdornment,
-} from '@material-ui/core';
+import { Button, TextField, InputAdornment } from '@material-ui/core';
 import {
   Send as SendIcon,
   Subject as SubjectIcon,
@@ -21,10 +15,15 @@ const TEST_SITE_KEY = process.env.REACT_APP_RECAPTCHA_CLIENT_KEY;
 
 const useFetch = () => {
   const [resData, setResData] = useState(null);
+  const [isLoading, setLoading] = useState(false);
   const [values, setValues] = useState(null);
+
   useEffect(() => {
     if (values === null) return;
+    setLoading(true);
     const { firstName, lastName, message, email, recaptcha } = values;
+    const abortController = new AbortController();
+
     const callFetchAsync = async () => {
       const endpoint = process.env.REACT_APP_FORM_ENDPOINT;
       const body = JSON.stringify({
@@ -36,20 +35,25 @@ const useFetch = () => {
       const requestOptions = {
         method: 'POST',
         body,
+        signal: abortController.signal,
       };
       const response = await fetch(endpoint, requestOptions);
       if (response.status === 200 && response.ok) {
         const json = response.json();
         setResData(json);
+        setLoading(false);
+
         return json;
       }
       setResData(response);
+      setLoading(false);
       return response;
     };
     callFetchAsync();
+    return () => abortController?.abort();
   }, [values]);
 
-  return [resData, setValues];
+  return [resData, isLoading, setValues];
 };
 
 const RecaptchaComponent = ({ children, reCaptchaRef, ...props }) => {
@@ -76,7 +80,7 @@ const RecaptchaComponent = ({ children, reCaptchaRef, ...props }) => {
 
 export const LiveFormMUI = () => {
   const reCaptchaRef = useRef(null);
-  const [resData, setValues] = useFetch();
+  const [resData, isLoading, setValues] = useFetch();
 
   return (
     <Formik
@@ -110,7 +114,6 @@ export const LiveFormMUI = () => {
       onSubmit={(values, { resetForm, setSubmitting }) => {
         const asyncWrapper = async () => {
           setValues(values);
-          console.log({ resData });
           setSubmitting(false);
           reCaptchaRef.current.reset();
           resetForm({
@@ -129,7 +132,7 @@ export const LiveFormMUI = () => {
       }}
     >
       {/* formik uses render props */}
-      {({ errors, touched, isSubmitting }) => (
+      {({ errors, touched }) => (
         <Form className="contact-form live" method="POST">
           <Field
             name="firstName"
@@ -211,7 +214,7 @@ export const LiveFormMUI = () => {
           <RecaptchaComponent name="recaptcha" reCaptchaRef={reCaptchaRef} />
 
           <Button
-            disabled={isSubmitting}
+            disabled={isLoading}
             color="primary"
             variant="contained"
             size="large"
@@ -220,6 +223,7 @@ export const LiveFormMUI = () => {
           >
             Submit
           </Button>
+          {JSON.stringify(resData, null, 2)}
         </Form>
       )}
     </Formik>

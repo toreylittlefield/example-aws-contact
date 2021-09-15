@@ -21,7 +21,12 @@ export const usePageTransitions = (prevElements, moveGsap) => {
   const [reverseAnimation, setReverseAnimation] = useState(null);
 
   useEffect(() => {
-    if (prevElements.enterEl === null || reverseAnimation === null) return;
+    if (
+      prevElements.enterEl === null ||
+      reverseAnimation === null ||
+      reverseAnimation === undefined
+    )
+      return;
 
     const tl = gsap.timeline({
       autoRemoveChildren: true,
@@ -101,11 +106,12 @@ export const usePageTransitions = (prevElements, moveGsap) => {
 
     return () => {
       if (tl) {
-        if (prevElements.exitEl === null) return;
+        if (prevElements.exitEl === null || reverseAnimation === undefined)
+          return;
         tl.reversed(true).then(() => tl.kill());
       }
     };
   }, [reverseAnimation]);
 
-  return [gsapTimingState, setReverseAnimation];
+  return [gsapTimingState, reverseAnimation, setReverseAnimation];
 };

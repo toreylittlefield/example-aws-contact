@@ -9,3 +9,4 @@ export * from './NavBar';
 export * from './CustomSwiper';
 export * from './IntroAnimation';
 export * from './PageWrapper';
+export * from './SkipPageTransitionsToggle';

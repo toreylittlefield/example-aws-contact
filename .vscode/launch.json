@@ -1,0 +1,11 @@
+{
+  "configurations": [
+    {
+      "name": "Debug Lambda",
+      "request": "launch",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/serverless/Lambdas/sendEmailLambda.js",
+      "type": "pwa-node"
+    }
+  ]
+}

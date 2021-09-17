@@ -39,12 +39,14 @@ const App = () => {
 
   const matchesMemo = useMemo(() => matches, [matches]);
   const moveGsap = matchesMemo ? 'xPercent' : 'yPercent';
+
   // custom hooks
   useRecaptchaCleanup(location);
   const [viewPathIndex, setViewPathIndex] = useRouterPathIndex(routes, history);
   const [gsapTimingState, reverseAnimation, setReverseAnimation] =
     usePageTransitions(prevElements.current, moveGsap);
 
+  // handle index changes for the navbar tabs
   const handleChange = (event) => {
     const el =
       event.target.parentElement.getAttribute('datapathIndex') ??

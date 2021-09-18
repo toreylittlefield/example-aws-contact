@@ -1,3 +1,4 @@
+AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
   severless ses-lambda-apigateway-contact-form
@@ -24,8 +25,8 @@ Resources:
             Method: post
       Environment:
         Variables:
-          CAPTCHA_KEY: GOES Here
-          SEND_MAIL_TO_ADDRESS: EmailToSendMailTo
+          CAPTCHA_KEY: yourserversiderecaptchakeythatyoushouldnotexpose
+          SEND_MAIL_TO_ADDRESS: EmailToSendMailTo@yourverifieddomainonaws.com
 # Outputs:
 #   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
 #   # Find out more about other implicit resources you can reference within SAM

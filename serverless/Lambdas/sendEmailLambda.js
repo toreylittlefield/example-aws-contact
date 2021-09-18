@@ -78,6 +78,8 @@ exports.lambdaHandler = async (event, context, callback) => {
     recaptcha = '',
   } = JSON.parse(event.body);
 
+  console.log({ event, name, email, message, recaptcha });
+
   const checkName = () => {
     if (!name || name.trim() === '') {
       callback(null, {
@@ -135,14 +137,14 @@ exports.lambdaHandler = async (event, context, callback) => {
 
 if (require.main === module) {
   console.log('running a test locally');
-  const event = {
-    body: {
-      name: 'torey',
-      email: 'testlocal@testlocal.com',
-      message: 'this is a local test and this is the message from the form',
-      recaptcha: 'somefakecaptchakey',
-    },
+  const event = require('../events/event.json');
+  const body = {
+    name: 'first name, last name',
+    email: 'testlocal@emailaddress.com',
+    message: 'this is a local test and this is the message from the form',
+    recaptcha: 'somefakecaptchakeyfromtheclientside',
   };
+  event.body = JSON.stringify(body);
   const callback = (...args) => console.log(...args);
-  exports.lambdaHandler({ body: JSON.stringify(event.body) }, {}, callback);
+  exports.lambdaHandler(event, {}, callback);
 }

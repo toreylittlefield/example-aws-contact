@@ -1,0 +1,6 @@
+{
+  "sendContactEmailFromPortfolio": {
+    "CAPTCHA_KEY": "theseversidecaptchakey",
+    "SEND_MAIL_TO_ADDRESS": "receivingemailaddress@mydomain.com"
+  }
+}

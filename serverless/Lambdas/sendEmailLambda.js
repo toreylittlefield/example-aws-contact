@@ -135,6 +135,10 @@ exports.lambdaHandler = async (event, context, callback) => {
   return captcha;
 };
 
+/**
+ * @description allows locally debugging and stepping through the lambda with the VS Code Debugger
+ * @link https://nodejs.org/api/modules.html#modules_require_main
+ */
 if (require.main === module) {
   console.log('running a test locally');
   const event = require('../events/event.json');

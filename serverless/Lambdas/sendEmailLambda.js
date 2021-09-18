@@ -1,24 +1,24 @@
 'use strict';
 
 const https = require('https');
-// const AWS = require('aws-sdk');
+const AWS = require('aws-sdk');
 
-// if (!AWS.config.region) {
-//   AWS.config.update({
-//     region: 'us-east-1',
-//   });
-// }
-// const ses = new AWS.SES();
+if (!AWS.config.region) {
+  AWS.config.update({
+    region: 'us-east-1',
+  });
+}
+const ses = new AWS.SES();
 
 const recaptchaSecKey = process.env.CAPTCHA_KEY;
 const sendToEmail = process.env.SEND_MAIL_TO_ADDRESS;
 
 const checkRecaptcha = async (recaptcha) => {
-  const recaptchaParams = new URLSearchParams({
+  const sendEmailParams = new sendEmailParams({
     secret: recaptchaSecKey,
     response: recaptcha,
   });
-  const postData = recaptchaParams.toString();
+  const postData = sendEmailParams.toString();
   const options = {
     hostname: 'www.google.com',
     port: 443,
@@ -76,6 +76,7 @@ exports.lambdaHandler = async (event, context, callback) => {
     email = '',
     message = '',
     recaptcha = '',
+    isLocal = false,
   } = JSON.parse(event.body);
 
   console.log({ event, name, email, message, recaptcha });
@@ -91,28 +92,33 @@ exports.lambdaHandler = async (event, context, callback) => {
     }
   };
 
-  const params = {
-    Destination: {
-      ToAddresses: [`Portofolio <${sendToEmail}>`],
-    },
-    // Interpolate the data in the strings to send
-    Message: {
-      Body: {
-        Text: {
-          Data: `You just got a message from ${name} - ${email}:
-            ${message}`,
-        },
-      },
-      Subject: { Data: `Message from ${name}` },
-    },
-    Source: `Portfolio Contact Form <${sendToEmail}>`,
-  };
-
   checkName();
-  const captcha = await checkRecaptcha(recaptcha);
+  let captcha;
+  if (!isLocal) {
+    captcha = await checkRecaptcha(recaptcha);
+  } else if (isLocal) {
+    captcha = { success: true };
+  }
   switch (captcha.success) {
     case true:
-      console.log(ses.sendEmail(params).promise());
+      const sendEmailParams = {
+        Destination: {
+          ToAddresses: [`Portofolio <${sendToEmail}>`],
+        },
+        // Interpolate the data in the strings to send
+        Message: {
+          Body: {
+            Text: {
+              Data: `You just got a message from ${name} - ${email}:
+            ${message}`,
+            },
+          },
+          Subject: { Data: `Message from ${name}` },
+        },
+        Source: `Portfolio Contact Form <${sendToEmail}>`,
+      };
+      const sendEmail = await ses.sendEmail(sendEmailParams).promise();
+      console.log(sendEmail);
       callback(null, {
         statusCode: 200,
         body: JSON.stringify({
